@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
           persona: {
             id: persona.id,
             displayName: persona.displayName,
-            imdbUrl: persona.imdbUrl,
+            movieImdbUrl: persona.movieImdbUrl,
             origin: persona.origin,
           }
         });
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
             persona: {
               id: persona.id,
               displayName: persona.displayName,
-              imdbUrl: persona.imdbUrl,
+              movieImdbUrl: persona.movieImdbUrl,
               origin: persona.origin,
             }
           });

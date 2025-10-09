@@ -9,7 +9,7 @@ interface RecipeCardProps {
   persona: {
     id: string;
     displayName: string;
-    imdbUrl: string;
+    movieImdbUrl: string;
     origin?: string;
   };
   onRegenerate?: () => void;
@@ -50,12 +50,22 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
           <div>
             <h3 className="text-sm text-muted-foreground mb-1">Recept från</h3>
             <h2 className="text-2xl font-bold text-primary">{persona.displayName}</h2>
-            {persona.origin && (
+            {persona.origin && persona.movieImdbUrl && (
+              <a 
+                href={persona.movieImdbUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground mt-1 italic hover:text-primary hover:underline transition-colors cursor-pointer inline-block"
+              >
+                {persona.origin}
+              </a>
+            )}
+            {persona.origin && !persona.movieImdbUrl && (
               <p className="text-sm text-muted-foreground mt-1 italic">{persona.origin}</p>
             )}
           </div>
           <a
-            href={persona.imdbUrl}
+            href={persona.movieImdbUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-background/50 hover:bg-background border border-border rounded-md transition-colors"

@@ -67,6 +67,12 @@ export default function RecipeForm({ onSubmit, isLoading, disabled }: RecipeForm
               type="text"
               value={ingredientInput}
               onChange={(e) => setIngredientInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddIngredient(e);
+                }
+              }}
               placeholder="t.ex. pasta, tomat, vitlök"
               className="flex-1 px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={disabled}
