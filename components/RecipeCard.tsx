@@ -81,6 +81,13 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
         {/* Title */}
         <h1 className="text-3xl font-bold">{recipe.title}</h1>
 
+        {/* Persona Line - Right under title */}
+        {recipe.personaLines.length > 0 && (
+          <p className="text-lg italic text-primary -mt-2">
+            "{recipe.personaLines[0]}"
+          </p>
+        )}
+
         {/* Meta Info */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -140,19 +147,6 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
             ))}
           </ol>
         </div>
-
-        {/* Persona Lines */}
-        {recipe.personaLines.length > 0 && (
-          <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-            <div className="space-y-2">
-              {recipe.personaLines.map((line, idx) => (
-                <p key={idx} className="italic text-primary">
-                  "{line}"
-                </p>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4">

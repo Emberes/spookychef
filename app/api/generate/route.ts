@@ -9,12 +9,21 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 // Store persona per chatId (in-memory for MVP)
 const chatPersonas = new Map<string, typeof personasData[0]>();
 
+// Cache generated recipes (in-memory for MVP)
+const recipeCache = new Map<string, any>();
+
 function getOrCreatePersona(chatId: string) {
   if (!chatPersonas.has(chatId)) {
     const randomPersona = personasData[Math.floor(Math.random() * personasData.length)];
     chatPersonas.set(chatId, randomPersona);
   }
   return chatPersonas.get(chatId)!;
+}
+
+function getCacheKey(candidateId: string, personaId: string, diet: string[], allergies: string[]) {
+  const dietKey = diet.sort().join(',');
+  const allergyKey = allergies.sort().join(',');
+  return `${candidateId}::${personaId}::${dietKey}::${allergyKey}`;
 }
 
 function buildSystemPrompt(persona: typeof personasData[0]) {
@@ -29,16 +38,19 @@ YOUR CHARACTER:
 - Quote Policy: ${persona.quotePolicy}
 
 CRITICAL - OUTPUT LANGUAGE:
-- ALL recipe content (title, steps, personaLines) MUST be in SWEDISH (Svenska)
+- ALL recipe content (title, steps) MUST be in SWEDISH (Svenska)
 - Write as if you're speaking Swedish while maintaining your character
 - Only ingredient names and technical terms can be in English if needed
+- TITLE FORMATTING: Use Swedish sentence case (only first word capitalized), NOT Title Case
+  Example: "Spöklikt god pasta carbonara" (NOT "Spöklikt God Pasta Carbonara")
+- PERSONA LINE: Write in ENGLISH for authenticity and character recognition
 
 CRITICAL - EMBODY THE CHARACTER IN EVERY STEP:
 - Write the ENTIRE recipe as if ${persona.displayName} is personally teaching you IN SWEDISH
 - The title should sound like something ${persona.displayName} would name (IN SWEDISH)
 - EVERY cooking step must be written in ${persona.displayName}'s voice and style (IN SWEDISH)
 - Don't just list instructions - make them sound like the character is talking
-- ${isSilent ? 'You are SILENT - NO personaLines at all, empty array only. Steps should be minimal and brutal.' : 'Add 1-5 short one-liners that are characteristic of ' + persona.displayName + ' (IN SWEDISH)'}
+- ${isSilent ? 'You are SILENT - NO personaLines at all, empty array only. Steps should be minimal and brutal.' : 'Add EXACTLY ONE short, characteristic one-liner from ' + persona.displayName + ' (IN ENGLISH for authenticity)'}
 
 EXAMPLES OF CHARACTER-VOICED STEPS (IN SWEDISH):
 - Normal: "Koka pasta i saltat vatten"
@@ -67,7 +79,7 @@ CHARACTER EXAMPLES TO INSPIRE YOU:
 - Ash Williams: Groovy, självsäker, verktygs-skämt, "Handla smart, laga mat smart"
 
 OUTPUT FORMAT (CRITICAL):
-Return ONLY valid JSON matching this exact schema (ALL TEXT IN SWEDISH):
+Return ONLY valid JSON matching this exact schema:
 {
   "personaId": "${persona.id}",
   "title": "string (persona-styled title IN SWEDISH)",
@@ -77,7 +89,7 @@ Return ONLY valid JSON matching this exact schema (ALL TEXT IN SWEDISH):
   "nutrition": { "kcal": number, "protein_g": number },
   "ingredients": [{ "name": "string", "qty": number|string, "unit": "string" }],
   "steps": ["string (written in persona's voice IN SWEDISH)"],
-  "personaLines": [${isSilent ? '' : '"string (1-5 character-specific lines IN SWEDISH)"'}]
+  "personaLines": [${isSilent ? '' : '"string (EXACTLY ONE character-specific line IN ENGLISH)"'}]
 }
 
 Remember: You ARE ${persona.displayName}. Make it feel like they're actually teaching you to cook IN SWEDISH!`;
@@ -100,15 +112,17 @@ CONSTRAINTS:
 - Dietary requirements: ${diet.length > 0 ? diet.join(', ') : 'none'}
 - Allergies to avoid: ${allergies.length > 0 ? allergies.join(', ') : 'none'}
 - Persona ID: ${persona.id}
-- Language: SWEDISH (all title, steps, personaLines)
+- Language: Recipe content (title, steps) in SWEDISH, personaLine in ENGLISH
 
-IMPORTANT - ADAPT THE RECIPE TO THE PERSONA (IN SWEDISH):
+IMPORTANT - ADAPT THE RECIPE TO THE PERSONA:
 
 1. **Title** (PÅ SVENSKA): Rewrite the title to reflect ${persona.displayName}'s personality
-   - Example: Ghostface → "Vad Är Din Favorit-Scary-Pasta?"
-   - Example: Dracula → "Midnattens Blodröda Tomatbisque"
-   - Example: Beetlejuice → "Beetlejuice Beetlejuice Beetlejuice Pasta!"
-   - Example: Wednesday → "Existentiell Pasta-ångest"
+   - USE SWEDISH SENTENCE CASE: Only first word capitalized (e.g., "Vad är din favorit scary pasta?")
+   - NOT Title Case (e.g., "Vad Är Din Favorit Scary Pasta?")
+   - Example: Ghostface → "Vad är din favorit scary pasta?"
+   - Example: Dracula → "Midnattens blodröda tomatbisque"
+   - Example: Beetlejuice → "Beetlejuice beetlejuice beetlejuice pasta!"
+   - Example: Wednesday → "Existentiell pastaångest"
 
 2. **Ingredients**: Keep the same core ingredients but:
    - Adjust quantities to match persona (e.g., Hannibal = precise, Ash Williams = rough estimates)
@@ -130,10 +144,12 @@ IMPORTANT - ADAPT THE RECIPE TO THE PERSONA (IN SWEDISH):
    
    Write ALL steps in this character-specific style (IN SWEDISH)!
 
-4. **PersonaLines** (PÅ SVENSKA): ${persona.voice.includes('silent') ? 'NO personaLines - return empty array' : `Add 1-5 short, humorous lines that ${persona.displayName} would say (IN SWEDISH)`}
-   - Example Ghostface: "Gillar du skrämmande pasta? Vad är din favorit?"
-   - Example Wednesday: "Jag föredrar min pasta mörk som min själ."
-   - Example Beetlejuice: "Det är SHOWTIME i köket!"
+4. **PersonaLine** (IN ENGLISH): ${persona.voice.includes('silent') ? 'NO personaLines - return empty array' : `Add EXACTLY ONE short, memorable line in ENGLISH that ${persona.displayName} would say`}
+   - Example Ghostface: "What's your favorite scary movie?"
+   - Example Wednesday: "I prefer my pasta as dark as my soul"
+   - Example Beetlejuice: "It's SHOWTIME in the kitchen!"
+   - Example Jack Skellington: "What's this? A new, exciting flavor experience!"
+   - Example Dracula: "I never drink... wine. But I do enjoy fine cuisine"
 
 5. **Cooking Style**: Reflect persona in technique suggestions
    - Hannibal Lecter: sophisticated techniques, precise timing
@@ -157,6 +173,17 @@ export async function POST(request: NextRequest) {
     }
 
     const persona = getOrCreatePersona(chatId);
+    
+    // Check cache first
+    const cacheKey = getCacheKey(candidate.id, persona.id, diet, allergies);
+    const cachedRecipe = recipeCache.get(cacheKey);
+    
+    if (cachedRecipe) {
+      console.log('✅ Cache hit for:', cacheKey);
+      return NextResponse.json(cachedRecipe);
+    }
+    
+    console.log('⚡ Cache miss, generating new recipe:', cacheKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const systemPrompt = buildSystemPrompt(persona);
@@ -174,8 +201,8 @@ export async function POST(request: NextRequest) {
           { text: userPrompt + (attempts > 1 ? '\n\nIMPORTANT: Return ONLY valid JSON, no markdown or extra text!' : '') }
         ]);
 
-        const response = await result.response;
-        let text = response.text();
+        const aiResponse = await result.response;
+        let text = aiResponse.text();
 
         // Clean up potential markdown formatting
         text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -203,8 +230,8 @@ export async function POST(request: NextRequest) {
           throw new Error('Allergen violation');
         }
 
-        // Success!
-        return NextResponse.json({
+        // Success! Build response and cache it
+        const response = {
           ...validatedRecipe,
           persona: {
             id: persona.id,
@@ -212,7 +239,13 @@ export async function POST(request: NextRequest) {
             movieImdbUrl: persona.movieImdbUrl,
             origin: persona.origin,
           }
-        });
+        };
+        
+        // Cache the result
+        recipeCache.set(cacheKey, response);
+        console.log('💾 Cached recipe:', cacheKey, '(Total cached:', recipeCache.size, ')');
+        
+        return NextResponse.json(response);
 
       } catch (parseError) {
         console.error(`Attempt ${attempts} failed:`, parseError);
@@ -220,7 +253,7 @@ export async function POST(request: NextRequest) {
         if (attempts >= maxAttempts) {
           // Fallback: return baseline candidate without persona twist
           console.log('Using fallback recipe');
-          return NextResponse.json({
+          const fallbackResponse = {
             personaId: persona.id,
             title: candidate.title,
             timeMinutes: candidate.timeMinutes,
@@ -244,7 +277,13 @@ export async function POST(request: NextRequest) {
               movieImdbUrl: persona.movieImdbUrl,
               origin: persona.origin,
             }
-          });
+          };
+          
+          // Cache fallback too
+          recipeCache.set(cacheKey, fallbackResponse);
+          console.log('💾 Cached fallback recipe:', cacheKey);
+          
+          return NextResponse.json(fallbackResponse);
         }
       }
     }
