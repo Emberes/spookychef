@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { normalizeIngredient } from '@/lib/normalize';
 import { jaccardSimilarity } from '@/lib/similarity';
 import recipes from '@/data/recipes_seed.json';
+import personas from '@/data/personas_pool.json';
 
 interface Recipe {
   id: string;
@@ -10,10 +11,29 @@ interface Recipe {
   tags: string[];
 }
 
-export async function POST(request: Request) {
-  const { ingredients, diet, allergies } = await request.json();
+interface Persona {
+  displayName: string;
+  imdbUrl: string;
+  quotePolicy: string;
+  preferredIngredients: string[];
+  dietaryRestrictions: string[];
+}
 
-  const normalizedIngredients = new Set(ingredients.map(normalizeIngredient));
+export async function POST(request: Request) {
+  const { ingredients, diet, allergies, personaName } = await request.json();
+
+  let combinedIngredients = ingredients;
+  let combinedAllergies = allergies || [];
+
+  if (personaName) {
+    const selectedPersona = personas.find(p => p.displayName === personaName) as Persona;
+    if (selectedPersona) {
+      combinedIngredients = [...ingredients, ...selectedPersona.preferredIngredients];
+      combinedAllergies = [...combinedAllergies, ...selectedPersona.dietaryRestrictions];
+    }
+  }
+
+  const normalizedIngredients = new Set(combinedIngredients.map(normalizeIngredient));
 
   let bestMatch: Recipe | null = null;
   let maxSimilarity = -1;
@@ -29,9 +49,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // Filter by allergies
-    if (allergies && allergies.length > 0) {
-      if (allergies.some((a: string) => recipe.ingredients.includes(a))) {
+    // Filter by allergies (including persona's dietary restrictions)
+    if (combinedAllergies && combinedAllergies.length > 0) {
+      if (combinedAllergies.some((a: string) => recipe.ingredients.includes(a))) {
         continue;
       }
     }

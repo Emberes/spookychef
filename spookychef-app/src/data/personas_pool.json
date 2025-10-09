@@ -2,41 +2,57 @@
   {
     "displayName": "Count Dracula",
     "imdbUrl": "https://www.imdb.com/title/tt0021814/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["blood", "rare meat"],
+    "dietaryRestrictions": ["garlic"]
   },
   {
     "displayName": "Frankenstein's Monster",
     "imdbUrl": "https://www.imdb.com/title/tt0021884/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["brains", "electricity"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "The Wolf Man",
     "imdbUrl": "https://www.imdb.com/title/tt0034398/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["raw meat", "moonberries"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "The Mummy",
     "imdbUrl": "https://www.imdb.com/title/tt0023245/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["ancient grains", "dried fruits"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "The Creature from the Black Lagoon",
     "imdbUrl": "https://www.imdb.com/title/tt0046876/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["freshwater fish", "algae"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "Norman Bates",
     "imdbUrl": "https://www.imdb.com/title/tt0054215/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["mother's home cooking", "stuffed birds"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "Hannibal Lecter",
     "imdbUrl": "https://www.imdb.com/title/tt0102926/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["fava beans", "chianti", "long pig"],
+    "dietaryRestrictions": []
   },
   {
     "displayName": "Ghostface",
     "imdbUrl": "https://www.imdb.com/title/tt0117571/",
-    "quotePolicy": "paraphrase_only"
+    "quotePolicy": "paraphrase_only",
+    "preferredIngredients": ["popcorn", "scream cheese"],
+    "dietaryRestrictions": []
   }
 ]
