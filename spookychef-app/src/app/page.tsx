@@ -60,7 +60,28 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setGeneratedRecipe(data.recipe);
+      const generatedRecipeData = data.recipe;
+
+      // Generate image for the recipe
+      const imageResponse = await fetch('/api/image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipeTitle: generatedRecipeData.title,
+          ingredients: generatedRecipeData.ingredients,
+          recipeId: generatedRecipeData.title, // Using title as a simple ID for caching
+        }),
+      });
+
+      let imageUrl: string | undefined;
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        imageUrl = imageData.imageUrl;
+      }
+
+      setGeneratedRecipe({ ...generatedRecipeData, imageUrl });
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

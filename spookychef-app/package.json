@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "test": "jest"
+    "test": "jest",
+    "load-test": "tsc src/scripts/load_test.ts --outDir dist/scripts && node dist/scripts/load_test.js"
   },
   "dependencies": {
     "@google/genai": "^1.23.0",
@@ -16,7 +17,8 @@
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "node-fetch": "^2.6.11"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -25,6 +27,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
+    "@types/node-fetch": "^2.6.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

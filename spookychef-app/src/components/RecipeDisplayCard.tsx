@@ -12,6 +12,7 @@ interface Recipe {
   ingredients: string[];
   steps: string[];
   personaLines: string[];
+  imageUrl?: string;
 }
 
 interface RecipeDisplayCardProps {
@@ -44,6 +45,9 @@ ${recipe.personaLines.map(line => `- ${line}`).join('\n')}
 
   return (
     <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-4">
+      {recipe.imageUrl && (
+        <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-48 object-cover rounded-md mb-4" />
+      )}
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{recipe.title}</h2>
       <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-300">
         <span>Time: {recipe.time}</span>

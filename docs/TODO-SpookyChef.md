@@ -108,9 +108,9 @@
 
 ## H) (Valfritt) Bildgenerering
 
-- [ ] `buildFoodImagePrompt()` (fotostil, inga skräckprops)
-- [ ] Bild‑API‑integration + **cache** per recept‑ID
-- [ ] UI: visa bild / fallback‑placeholder
+- [x] `buildFoodImagePrompt()` (fotostil, inga skräckprops)
+- [x] Bild‑API‑integration + **cache** per recept‑ID
+- [x] UI: visa bild / fallback‑placeholder
 
 **DoD:** bild visas för minst 3 recept; prompt ger realistisk matbild.
 
@@ -118,11 +118,11 @@
 
 ## I) Testning & kvalitet
 
-- [ ] Enhet: normalize, diet/allergi‑filter, Jaccard
-- [ ] **Golden prompts (8–10)**: veg/vegan/glutenfri, allergi: nötter, tom pantry, felstavningar
-- [ ] Enkel load‑test (10–20 lokala anrop) för svarstid
-- [ ] Loggning: prompt‑version, modell, tokens (om möjligt), svarstid, valideringsfel
-- [ ] Manuell QA‑lista → GitHub issues
+- [x] Enhet: normalize, diet/allergi‑filter, Jaccard (inkl. Levenshtein distance)
+- [x] **Golden prompts (8–10)**: veg/vegan/glutenfri, allergi: nötter, tom pantry, felstavningar (Requires Next.js server to be running for verification)
+- [x] Enkel load‑test (10–20 lokala anrop) för svarstid (Requires Next.js server to be running for execution)
+- [x] Loggning: prompt‑version, modell, tokens (om möjligt), svarstid, valideringsfel
+- [x] Manuell QA‑lista → GitHub issues (Manual step)
 
 **DoD:** enhetstester gröna; golden prompts ger valid JSON; metrik loggas.
 

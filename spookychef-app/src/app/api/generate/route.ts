@@ -61,7 +61,7 @@ interface Recipe {
 };
 `;
 
-const basePrompt = `
+  const basePrompt = `
 ${SYSTEM_PROMPT_BASE}
 ${personaPrompt}
 
@@ -79,21 +79,51 @@ ${RECIPE_INTERFACE_SCHEMA}
   let attempts = 0;
   const maxAttempts = 2; // Initial attempt + 1 retry
 
+  const logEntry: any = {
+    timestamp: new Date().toISOString(),
+    promptVersion: "1.0", // Assuming a simple versioning for the prompt structure
+    model: "gemini-pro",
+    ingredients: ingredients,
+    diet: diet,
+    allergies: allergies,
+    personaName: personaName,
+    responseTimes: [],
+    validationErrors: [],
+    tokensUsed: {},
+  };
+
   while (attempts < maxAttempts) {
+    const requestStartTime = Date.now();
     try {
       const currentPrompt = attempts === 0 ? basePrompt : `${basePrompt}\n\nYour previous response was not valid JSON or did not match the schema. Please provide a valid JSON response according to the schema.`;
       const result = await model.generateContent(currentPrompt);
       const response = await result.response;
       const text = response.text();
+      const requestEndTime = Date.now();
+      logEntry.responseTimes.push(requestEndTime - requestStartTime);
+
+      // Attempt to get token count (if API provides it)
+      // Note: The current @google/generative-ai library might not directly expose token counts for generateContent in a straightforward way.
+      // This is a placeholder for future integration if available.
+      // For now, we'll just log an empty object or a placeholder.
+      logEntry.tokensUsed = response.usageMetadata || {};
 
       generatedRecipe = recipeSchema.parse(JSON.parse(text));
+      logEntry.status = "success";
+      console.log("API Log:", JSON.stringify(logEntry));
       break; // Valid JSON, exit loop
     } catch (error) {
+      const requestEndTime = Date.now();
+      logEntry.responseTimes.push(requestEndTime - requestStartTime);
       if (error instanceof z.ZodError) {
+        logEntry.validationErrors.push(error.errors);
         console.error(`Attempt ${attempts + 1} failed to parse or validate generated JSON:`, error);
         attempts++;
       } else {
+        logEntry.status = "error";
+        logEntry.errorMessage = error instanceof Error ? error.message : "Unknown error";
         console.error(`Attempt ${attempts + 1} failed with LLM error:`, error);
+        console.log("API Log:", JSON.stringify(logEntry));
         attempts = maxAttempts; // Exit loop on LLM error
       }
     }
@@ -152,8 +182,13 @@ ${RECIPE_INTERFACE_SCHEMA}
         steps: ["No detailed steps available for fallback recipe."], // Default value
         personaLines: ["This recipe is a classic, even without my personal touch."], // Default value
       };
+      logEntry.status = "fallback";
+      console.log("API Log:", JSON.stringify(logEntry));
       return NextResponse.json({ recipe: fallbackRecipe });
     } else {
+      logEntry.status = "failure";
+      logEntry.errorMessage = "Failed to generate recipe and no candidate available";
+      console.log("API Log:", JSON.stringify(logEntry));
       return NextResponse.json({ error: "Failed to generate recipe and no candidate available" }, { status: 500 });
     }
   }
