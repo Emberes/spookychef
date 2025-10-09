@@ -10,7 +10,7 @@ export default function Home() {
   const [persona, setPersona] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [chatId] = useState(() => Math.random().toString(36).substring(7));
+  const [chatId, setChatId] = useState(() => Math.random().toString(36).substring(7));
   
   // Store search criteria and candidates for regeneration
   const [searchCriteria, setSearchCriteria] = useState<{
@@ -20,6 +20,7 @@ export default function Home() {
   } | null>(null);
   const [allCandidates, setAllCandidates] = useState<any[]>([]);
   const [currentCandidateIndex, setCurrentCandidateIndex] = useState(0);
+  const [currentCandidate, setCurrentCandidate] = useState<any>(null);
 
   const handleGenerateRecipe = async (
     ingredients: string[],
@@ -50,6 +51,7 @@ export default function Home() {
       // Store all candidates for regeneration
       setAllCandidates(allCandidates || [candidate]);
       setCurrentCandidateIndex(0);
+      setCurrentCandidate(candidate);
 
       // Step 2: Generate persona-ified recipe
       const generateRes = await fetch('/api/generate', {
@@ -57,6 +59,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           candidate,
+          userIngredients: ingredients, // Send original user input
           chatId,
           diet,
           allergies,
@@ -91,6 +94,7 @@ export default function Home() {
       const nextIndex = (currentCandidateIndex + 1) % allCandidates.length;
       const nextCandidate = allCandidates[nextIndex];
       setCurrentCandidateIndex(nextIndex);
+      setCurrentCandidate(nextCandidate);
 
       // Generate with next candidate
       const generateRes = await fetch('/api/generate', {
@@ -98,7 +102,49 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           candidate: nextCandidate,
+          userIngredients: searchCriteria.ingredients, // Send original user input
           chatId,
+          diet: searchCriteria.diet,
+          allergies: searchCriteria.allergies,
+        }),
+      });
+
+      if (!generateRes.ok) {
+        const errorData = await generateRes.json();
+        throw new Error(errorData.error || 'Failed to generate recipe');
+      }
+
+      const recipeData = await generateRes.json();
+      setRecipe(recipeData);
+      setPersona(recipeData.persona);
+    } catch (err) {
+      console.error('Error:', err);
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangeChef = async () => {
+    if (!searchCriteria || !currentCandidate) return;
+
+    setIsLoading(true);
+    setError(null);
+    setRecipe(null);
+
+    try {
+      // Generate new chatId to get a different persona
+      const newChatId = Math.random().toString(36).substring(7);
+      setChatId(newChatId);
+
+      // Regenerate with same candidate but new persona
+      const generateRes = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidate: currentCandidate,
+          userIngredients: searchCriteria.ingredients, // Send original user input
+          chatId: newChatId,
           diet: searchCriteria.diet,
           allergies: searchCriteria.allergies,
         }),
@@ -149,6 +195,7 @@ export default function Home() {
             recipe={recipe}
             persona={persona}
             onRegenerate={handleRegenerate}
+            onChangeChef={handleChangeChef}
             isRegenerating={isLoading}
           />
         )}

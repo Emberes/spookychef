@@ -13,10 +13,11 @@ interface RecipeCardProps {
     origin?: string;
   };
   onRegenerate?: () => void;
+  onChangeChef?: () => void;
   isRegenerating?: boolean;
 }
 
-export default function RecipeCard({ recipe, persona, onRegenerate, isRegenerating = false }: RecipeCardProps) {
+export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
@@ -149,24 +150,37 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col gap-3 pt-4">
           <button
             onClick={copyToClipboard}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
           >
             <Copy size={18} />
             {copied ? 'Kopierat!' : 'Kopiera recept'}
           </button>
-          {onRegenerate && (
-            <button
-              onClick={onRegenerate}
-              disabled={isRegenerating}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw size={18} className={isRegenerating ? 'animate-spin' : ''} />
-              {isRegenerating ? 'Genererar...' : 'Generera om'}
-            </button>
-          )}
+          
+          <div className="flex gap-3">
+            {onRegenerate && (
+              <button
+                onClick={onRegenerate}
+                disabled={isRegenerating}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw size={18} className={isRegenerating ? 'animate-spin' : ''} />
+                {isRegenerating ? 'Genererar...' : 'Annat recept'}
+              </button>
+            )}
+            {onChangeChef && (
+              <button
+                onClick={onChangeChef}
+                disabled={isRegenerating}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-accent text-accent-foreground border border-border rounded-md hover:bg-accent/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChefHat size={18} />
+                {isRegenerating ? 'Byter...' : 'Byt kock'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

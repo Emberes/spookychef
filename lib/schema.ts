@@ -44,6 +44,7 @@ export const GenerateRequestSchema = z.object({
       protein_g: z.number(),
     }),
   }),
+  userIngredients: z.array(z.string()).optional().default([]),
   chatId: z.string(),
   diet: z.array(z.string()).optional().default([]),
   allergies: z.array(z.string()).optional().default([]),

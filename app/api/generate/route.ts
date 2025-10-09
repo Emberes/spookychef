@@ -97,22 +97,28 @@ Remember: You ARE ${persona.displayName}. Make it feel like they're actually tea
 
 function buildUserPrompt(
   candidate: any,
+  userIngredients: string[],
   diet: string[],
   allergies: string[],
   persona: typeof personasData[0]
 ) {
+  const userIngredientsText = userIngredients.length > 0 
+    ? `\n\nUSER'S ORIGINAL INGREDIENTS (use these exact names when possible):\n${userIngredients.join(', ')}`
+    : '';
+
   return `Create a recipe based on this candidate recipe, adapted to the ${persona.displayName} persona style.
 
 CRITICAL: ALL TEXT MUST BE IN SWEDISH (Svenska)!
 
 BASE RECIPE:
-${JSON.stringify(candidate, null, 2)}
+${JSON.stringify(candidate, null, 2)}${userIngredientsText}
 
 CONSTRAINTS:
 - Dietary requirements: ${diet.length > 0 ? diet.join(', ') : 'none'}
 - Allergies to avoid: ${allergies.length > 0 ? allergies.join(', ') : 'none'}
 - Persona ID: ${persona.id}
 - Language: Recipe content (title, steps) in SWEDISH, personaLine in ENGLISH
+- IMPORTANT: When user provided specific ingredient names (like "prosciutto"), use those exact names in the recipe instead of generic terms (like "skinka")
 
 IMPORTANT - ADAPT THE RECIPE TO THE PERSONA:
 
@@ -163,7 +169,7 @@ Return ONLY the JSON object with the persona-adapted recipe (ALL TEXT IN SWEDISH
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { candidate, chatId, diet, allergies } = GenerateRequestSchema.parse(body);
+    const { candidate, userIngredients, chatId, diet, allergies } = GenerateRequestSchema.parse(body);
 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -187,7 +193,7 @@ export async function POST(request: NextRequest) {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const systemPrompt = buildSystemPrompt(persona);
-    const userPrompt = buildUserPrompt(candidate, diet, allergies, persona);
+    const userPrompt = buildUserPrompt(candidate, userIngredients, diet, allergies, persona);
 
     let attempts = 0;
     const maxAttempts = 2;
