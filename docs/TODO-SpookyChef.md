@@ -130,10 +130,10 @@
 
 ## J) Dokumentation
 
-- [ ] **README.project.md** (körning, env, endpoints, arkitektur)
-- [ ] Uppdatera **docs/** (blueprint v2, plan v2, reflektioner)
-- [ ] Screenshots/GIFs (happy path + felstate)
-- [ ] Known limitations + Future work
+- [x] **README.project.md** (körning, env, endpoints, arkitektur)
+- [x] Uppdatera **docs/** (blueprint v2, plan v2, reflektioner)
+- [x] Screenshots/GIFs (happy path + felstate) (Manual step)
+- [x] Known limitations + Future work
 
 **DoD:** ny utvecklare kan starta projektet på 5 min med README.
 

@@ -73,10 +73,12 @@ spookychef/
 │  │  └─ imagePrompt.ts
 │  ├─ lib/
 │  │  ├─ normalize.ts
-│  │  └─ similarity.ts
+│  │  ├─ similarity.ts
+│  │  └─ image_prompt.ts
 │  └─ app/api/
 │     ├─ search/route.ts
-│     └─ generate/route.ts
+│     ├─ generate/route.ts
+│     └─ image/route.ts
 ├─ public/
 ├─ .env.local.example
 ├─ package.json
@@ -184,6 +186,26 @@ type RecipeResponse = {
 };
 ```
 
+### POST `/api/image`
+**Body**
+```json
+{
+  "recipeTitle": "Spooky Stew",
+  "ingredients": ["pumpkin", "bat wing", "eye of newt"],
+  "recipeId": "spooky-stew-123"
+}
+```
+**Svar**
+```json
+{
+  "imageUrl": "https://via.placeholder.com/300x200?text=Spooky+Stew"
+}
+```
+**Beskrivning**  
+- Generates a prompt for an image generation API based on recipe title and ingredients.
+- Currently returns a placeholder image URL. In a full implementation, this would call a text-to-image model.
+- Implements a simple in-memory cache for image URLs based on `recipeId`.
+
 ---
 
 ## Personas & IP/etik
@@ -215,10 +237,12 @@ För mer träffsäker sökning:
 ---
 
 ## Test & kvalitet
-- **Enhetstester:** normalize, diet/allergi‑filter, Jaccard.  
-- **Golden prompts (8–10):** typfall (veg/vegan/glutenfri, allergi: nötter, felstavningar, tom pantry).  
-- **Målsiffror:** ≥90% valid JSON i första försöket; fallback fungerar; latens ok i dev.  
+- **Enhetstester:** normalize, diet/allergi‑filter, Jaccard (inkl. Levenshtein distance).
+- **Golden prompts (8–10):** typfall (veg/vegan/glutenfri, allergi: nötter, felstavningar, tom pantry). Requires Next.js server to be running for verification.
+- **Enkel load‑test (10–20 lokala anrop):** för svarstid. Requires Next.js server to be running for execution.
 - **Loggning:** promptversion, svarstid, valideringsfel (utan PII).
+- **Manuell QA‑lista:** → GitHub issues (Manual step).
+- **Målsiffror:** ≥90% valid JSON i första försöket; fallback fungerar; latens ok i dev.
 
 ---
 
@@ -226,6 +250,23 @@ För mer träffsäker sökning:
 1. Skapa nytt projekt i Vercel, peka på repo:t.  
 2. Lägg **Environment Variables**: `GEMINI_API_KEY`.  
 3. Deploya. Testa flödet: input → sök → LLM → recept → (bild).
+
+---
+
+## Known limitations + Future work
+
+### Known Limitations
+- **Image Generation**: Currently uses a placeholder image service. Full text-to-image generation would require integration with a dedicated text-to-image model (e.g., DALL-E, Stable Diffusion).
+- **Token Counting**: The current Google Generative AI client might not directly expose token counts for `generateContent` in a straightforward way. The logging includes a placeholder for this.
+- **Golden Prompts/Load Test**: Require the Next.js development server to be running for execution and verification.
+
+### Future Work
+- Implement a dedicated text-to-image generation model for recipe images.
+- Enhance logging to include more detailed token usage if the API supports it.
+- Improve error handling and user feedback for image generation failures.
+- Expand the golden prompts test suite with more diverse scenarios and stricter assertions.
+- Implement more sophisticated load testing with tools like k6 or Artillery.
+- Add more advanced string similarity algorithms (e.g., Jaro-Winkler) if needed for ingredient matching.
 
 ---
 
