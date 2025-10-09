@@ -13,9 +13,10 @@ interface RecipeCardProps {
     origin?: string;
   };
   onRegenerate?: () => void;
+  isRegenerating?: boolean;
 }
 
-export default function RecipeCard({ recipe, persona, onRegenerate }: RecipeCardProps) {
+export default function RecipeCard({ recipe, persona, onRegenerate, isRegenerating = false }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
@@ -155,10 +156,11 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
           {onRegenerate && (
             <button
               onClick={onRegenerate}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              disabled={isRegenerating}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <RefreshCw size={18} />
-              Generera om
+              <RefreshCw size={18} className={isRegenerating ? 'animate-spin' : ''} />
+              {isRegenerating ? 'Genererar...' : 'Generera om'}
             </button>
           )}
         </div>

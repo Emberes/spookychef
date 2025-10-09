@@ -84,6 +84,7 @@ export default function Home() {
 
     setIsLoading(true);
     setError(null);
+    setRecipe(null); // Clear old recipe to show skeleton
 
     try {
       // Get next candidate (cycle through the list)
@@ -143,11 +144,12 @@ export default function Home() {
           </div>
         )}
 
-        {recipe && persona && (
+        {recipe && persona && !isLoading && (
           <RecipeCard
             recipe={recipe}
             persona={persona}
             onRegenerate={handleRegenerate}
+            isRegenerating={isLoading}
           />
         )}
 
