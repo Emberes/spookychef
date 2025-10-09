@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { GoogleGenerativeAI } from '@google/genai';
+import {GoogleGenerativeAI} from '@google/generative-ai';
 import personas from '@/data/personas_pool.json';
 import recipes from '@/data/recipes_seed.json';
 
@@ -47,17 +47,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const basePrompt = `
-${SYSTEM_PROMPT_BASE}
-${personaPrompt}
-
-Based on the following:
-Ingredients: ${ingredients.join(', ')}
-Dietary needs: ${diet.join(', ')}
-Allergies: ${allergies.join(', ')}
-Candidate Recipe (for inspiration, if available): ${candidateRecipe ? candidateRecipe.title : 'None'}
-
-Generate a recipe in JSON format according to the following TypeScript interface (convert to JSON):
+  const RECIPE_INTERFACE_SCHEMA = `
 interface Recipe {
   title: string;
   time: string; // e.g., "30 minutes", "1 hour"
@@ -68,7 +58,21 @@ interface Recipe {
   ingredients: string[];
   steps: string[];
   personaLines: string[]; // Short, spooky comments from the persona about the recipe
-}
+};
+`;
+
+const basePrompt = `
+${SYSTEM_PROMPT_BASE}
+${personaPrompt}
+
+Based on the following:
+Ingredients: ${ingredients.join(', ')}
+Dietary needs: ${diet.join(', ')}
+Allergies: ${allergies.join(', ')}
+Candidate Recipe (for inspiration, if available): ${candidateRecipe ? candidateRecipe.title : 'None'}
+
+Generate a recipe in JSON format according to the following TypeScript interface (convert to JSON):
+${RECIPE_INTERFACE_SCHEMA}
 `;
 
   let generatedRecipe: Recipe | null = null;
@@ -84,12 +88,14 @@ interface Recipe {
 
       generatedRecipe = recipeSchema.parse(JSON.parse(text));
       break; // Valid JSON, exit loop
-    } catch (parseError) {
-      console.error(`Attempt ${attempts + 1} failed to parse or validate generated JSON:`, parseError);
-      attempts++;
     } catch (error) {
-      console.error(`Attempt ${attempts + 1} failed with LLM error:`, error);
-      attempts = maxAttempts; // Exit loop on LLM error
+      if (error instanceof z.ZodError) {
+        console.error(`Attempt ${attempts + 1} failed to parse or validate generated JSON:`, error);
+        attempts++;
+      } else {
+        console.error(`Attempt ${attempts + 1} failed with LLM error:`, error);
+        attempts = maxAttempts; // Exit loop on LLM error
+      }
     }
   }
 

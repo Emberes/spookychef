@@ -80,14 +80,14 @@
 
 ## F) LLM‑generering – `/api/generate`
 
-- [ ] `SYSTEM_PROMPT`: PG‑16, **parodi/inspirerad**, **recept only**, inga citat
-- [ ] Persona‑prompt: persona‑metadata, constraints, kandidat‑JSON, diet/allergier
-- [ ] Modellanrop (Gemini/adapter)
-- [ ] **Zod‑validering** (titel, tid, svårighet, dietTags, kcal/protein, ingredients[], steps[], personaLines[])
-- [ ] **Retry (1x)** vid ogiltig JSON (“JSON only, follow schema”)
-- [ ] **Fallback**: visa baslinje‑kandidaten utan persona
-- [ ] **Efterkontroll**: blockera otillåtna ingredienser trots modellens svar
-- [ ] Enkel “**svartlista**” för kända catchphrases (skydd mot citat)
+- [x] `SYSTEM_PROMPT`: PG‑16, **parodi/inspirerad**, **recept only**, inga citat
+- [x] Persona‑prompt: persona‑metadata, constraints, kandidat‑JSON, diet/allergier
+- [x] Modellanrop (Gemini/adapter)
+- [x] **Zod‑validering** (titel, tid, svårighet, dietTags, kcal/protein, ingredients[], steps[], personaLines[])
+- [x] **Retry (1x)** vid ogiltig JSON (“JSON only, follow schema”)
+- [x] **Fallback**: visa baslinje‑kandidaten utan persona
+- [x] **Efterkontroll**: blockera otillåtna ingredienser trots modellens svar
+- [x] Enkel “**svartlista**” för kända catchphrases (skydd mot citat)
 
 **DoD:** ≥90% valid JSON på golden prompts; inga scenanvisningar; inga direkta citat.
 
@@ -95,12 +95,12 @@
 
 ## G) UI & UX
 
-- [ ] Input: chips/kommatext + diet/allergi‑chips
-- [ ] Resultatkort: titel • tid • svårighet • diet‑taggar • kcal/protein • ingredienser • steg • (personaLines)
-- [ ] Knappar: **Generera om**, **Kopiera recept**
-- [ ] Loading‑skelett + felstates
-- [ ] Dark theme (enligt palett i blueprint)
-- [ ] Tillgänglighet: aria, tabb‑ordning, fokusmarkering
+- [x] Input: chips/kommatext + diet/allergi‑chips
+- [x] Resultatkort: titel • tid • svårighet • diet‑taggar • kcal/protein • ingredienser • steg • (personaLines)
+- [x] Knappar: **Generera om**, **Kopiera recept**
+- [x] Loading‑skelett + felstates
+- [x] Dark theme (enligt palett i blueprint)
+- [x] Tillgänglighet: aria, tabb‑ordning, fokusmarkering
 
 **DoD:** flödet input → resultat fungerar; A11y grundkrav uppfyllda.
 
