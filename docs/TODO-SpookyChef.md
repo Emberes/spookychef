@@ -23,7 +23,7 @@
 - [x] Initiera Next.js (TS, Tailwind, app router, alias `@/*`)
 - [x] Skapa **README.project.md** (körinstruktioner, länkar till docs)
 - [x] Skapa `docs/` och lägg in: **blueprint‑v2.md**, **plan‑gemini‑v2.md**, **reflektioner.md**
-- [x] `.env.local.example` (GEMINI_API_KEY, IMAGE_API_KEY)
+- [x] `.env.local.example` (GEMINI_API_KEY)
 - [x] `.gitignore` (node_modules, .env*, .next, .vercel)
 - [x] ESLint/Prettier bas
 

@@ -34,7 +34,7 @@ npm install   # eller: pnpm install / yarn
 cp .env.local.example .env.local
 # Fyll i:
 # GEMINI_API_KEY=...
-# IMAGE_API_KEY=...   # valfritt om du kör bild-API
+
 
 # Starta dev-server
 npm run dev
@@ -89,7 +89,7 @@ spookychef/
 Skapa `.env.local` baserat på `.env.local.example`:
 ```
 GEMINI_API_KEY=        # krävs för /api/generate
-IMAGE_API_KEY=         # valfritt, om bild-API används
+
 ```
 
 > **Viktigt:** Checka aldrig in riktiga nycklar.
@@ -224,7 +224,7 @@ För mer träffsäker sökning:
 
 ## Deploy (Vercel)
 1. Skapa nytt projekt i Vercel, peka på repo:t.  
-2. Lägg **Environment Variables**: `GEMINI_API_KEY` (+ `IMAGE_API_KEY` om bild).  
+2. Lägg **Environment Variables**: `GEMINI_API_KEY`.  
 3. Deploya. Testa flödet: input → sök → LLM → recept → (bild).
 
 ---
