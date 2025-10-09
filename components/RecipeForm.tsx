@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RecipeFormProps {
@@ -164,8 +164,9 @@ export default function RecipeForm({ onSubmit, isLoading, disabled }: RecipeForm
         <button
           type="submit"
           disabled={disabled || ingredients.length === 0}
-          className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
+          {isLoading && <Loader2 size={20} className="animate-spin" />}
           {isLoading ? 'Genererar recept...' : 'Generera recept'}
         </button>
       </div>
