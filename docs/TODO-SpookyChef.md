@@ -32,32 +32,32 @@
 ---
 
 ## B) Data & normalisering
-- [ ] Lägg `src/data/recipes_seed.json` (seed‑korpus)
-- [ ] Lägg `src/data/ingredient_aliases.json`
-- [ ] Lägg `src/data/personas_pool.json` (≥8; `displayName`, `imdbUrl`, `quotePolicy` = `paraphrase_only`)
-- [ ] Implementera `src/lib/normalize.ts` (alias‑matchning, lowercase, trim)
-- [ ] Enhetstest: alias för minst 10 vanliga varianter (paprika, lök, bönor, grädde …)
+- [x] Lägg `src/data/recipes_seed.json` (seed‑korpus)
+- [x] Lägg `src/data/ingredient_aliases.json`
+- [x] Lägg `src/data/personas_pool.json` (≥8; `displayName`, `imdbUrl`, `quotePolicy` = `paraphrase_only`)
+- [x] Implementera `src/lib/normalize.ts` (alias‑matchning, lowercase, trim)
+- [x] Enhetstest: alias för minst 10 vanliga varianter (paprika, lök, bönor, grädde …)
 
 **DoD:** normalisering returnerar förväntade kanoniska namn för testfallen.
 
 ---
 
 ## C) Persona‑motor (PG‑16 + recept only)
-- [ ] Slumpa persona **per ny chatt** och spara i session
-- [ ] Enforce `quotePolicy=paraphrase_only` (ingen direkt‑citat)
-- [ ] **Tysta personas**: *ingen* scenanvisning, **endast recept**
-- [ ] UI: visa `displayName` + **IMDb‑länk**
+- [x] Slumpa persona **per ny chatt** och spara i session
+- [-] Enforce `quotePolicy=paraphrase_only` (ingen direkt‑citat)
+- [-] **Tysta personas**: *ingen* scenanvisning, **endast recept**
+- [x] UI: visa `displayName` + **IMDb‑länk**
 
 **DoD:** persona följer reglerna; tyst persona skriver bara recept; IMDb‑länk fungerar.
 
 ---
 
 ## D) Sök (baslinje) – `/api/search`
-- [ ] POST `{ ingredients[], diet[], allergies[] }`
-- [ ] Normalisera ingredienser
-- [ ] **Viktad Jaccard** mot receptens ingrediens‑set
-- [ ] Filtrera strikt på diet/allergi
-- [ ] Returnera **1 kandidat** + lista över testade id:n (logg)
+- [x] POST `{ ingredients[], diet[], allergies[] }`
+- [x] Normalisera ingredienser
+- [x] **Viktad Jaccard** mot receptens ingrediens‑set
+- [x] Filtrera strikt på diet/allergi
+- [x] Returnera **1 kandidat** + lista över testade id:n (logg)
 
 **DoD:** för kända inputs (t.ex. pasta+tomat) returneras rimlig kandidat; filter blockerar otillåtna.
 

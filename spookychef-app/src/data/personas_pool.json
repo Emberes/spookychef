@@ -1,0 +1,42 @@
+[
+  {
+    "displayName": "Count Dracula",
+    "imdbUrl": "https://www.imdb.com/title/tt0021814/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "Frankenstein's Monster",
+    "imdbUrl": "https://www.imdb.com/title/tt0021884/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "The Wolf Man",
+    "imdbUrl": "https://www.imdb.com/title/tt0034398/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "The Mummy",
+    "imdbUrl": "https://www.imdb.com/title/tt0023245/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "The Creature from the Black Lagoon",
+    "imdbUrl": "https://www.imdb.com/title/tt0046876/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "Norman Bates",
+    "imdbUrl": "https://www.imdb.com/title/tt0054215/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "Hannibal Lecter",
+    "imdbUrl": "https://www.imdb.com/title/tt0102926/",
+    "quotePolicy": "paraphrase_only"
+  },
+  {
+    "displayName": "Ghostface",
+    "imdbUrl": "https://www.imdb.com/title/tt0117571/",
+    "quotePolicy": "paraphrase_only"
+  }
+]
