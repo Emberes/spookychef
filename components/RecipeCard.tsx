@@ -10,6 +10,7 @@ interface RecipeCardProps {
     id: string;
     displayName: string;
     imdbUrl: string;
+    origin?: string;
   };
   onRegenerate?: () => void;
 }
@@ -48,6 +49,9 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
           <div>
             <h3 className="text-sm text-muted-foreground mb-1">Recept från</h3>
             <h2 className="text-2xl font-bold text-primary">{persona.displayName}</h2>
+            {persona.origin && (
+              <p className="text-sm text-muted-foreground mt-1 italic">{persona.origin}</p>
+            )}
           </div>
           <a
             href={persona.imdbUrl}

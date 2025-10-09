@@ -192,9 +192,9 @@ Vercel detekterar automatiskt Next.js och kör `npm run build`.
 - ✅ Fullständig dokumentation
 
 ### Data
-- ✅ 12 recept i seed-korpus
-- ✅ 50+ ingrediens-alias
-- ✅ 12 personas med IMDb-länkar
+- ✅ 1000 recept i seed-korpus (varierade kök, dietkrav, svårighetsgrader)
+- ✅ 53 ingrediens-alias
+- ✅ 55 personas (massiv variation från klassisk horror till whimsical)
 
 ### Säkerhet & etik
 - ✅ PG-16 guardrails

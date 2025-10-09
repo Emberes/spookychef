@@ -13,9 +13,9 @@
 
 ### 📊 Data (100%)
 ```
-✅ recipes_seed.json - 12 recept med metadata
-✅ ingredient_aliases.json - 50+ alias-mappningar  
-✅ personas_pool.json - 12 personas med IMDb-länkar
+✅ recipes_seed.json - 1000 recept med metadata
+✅ ingredient_aliases.json - 53 alias-mappningar  
+✅ personas_pool.json - 55 personas med IMDb-länkar
 ```
 
 ### 🔧 Lib / Utilities (100%)

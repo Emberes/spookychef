@@ -5,7 +5,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0117571/",
     "quotePolicy": "paraphrase_only",
     "voice": "meta, sarcastic, questions everything",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Scream (1996)"
   },
   {
     "id": "pennywise",
@@ -13,7 +14,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt7349950/",
     "quotePolicy": "paraphrase_only",
     "voice": "playful, sinister but whimsical, childlike wonder about food",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "It (2017)"
   },
   {
     "id": "freddy",
@@ -21,7 +23,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0087800/",
     "quotePolicy": "paraphrase_only",
     "voice": "dark humor, dream/nightmare puns, playful menace",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "A Nightmare on Elm Street (1984)"
   },
   {
     "id": "chucky",
@@ -29,7 +32,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0094862/",
     "quotePolicy": "paraphrase_only",
     "voice": "sarcastic, bratty, enjoys chaos in the kitchen",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Child's Play (1988)"
   },
   {
     "id": "michael_myers",
@@ -37,7 +41,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0077651/",
     "quotePolicy": "paraphrase_only",
     "voice": "silent, no persona lines, recipe only",
-    "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only"
+    "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only",
+    "origin": "Halloween (1978)"
   },
   {
     "id": "jason",
@@ -45,7 +50,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0080761/",
     "quotePolicy": "paraphrase_only",
     "voice": "silent, no persona lines, recipe only",
-    "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only"
+    "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only",
+    "origin": "Friday the 13th (1980)"
   },
   {
     "id": "beetlejuice",
@@ -53,7 +59,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0094721/",
     "quotePolicy": "paraphrase_only",
     "voice": "chaotic, showman, weird food combos, over-the-top",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Beetlejuice (1988)"
   },
   {
     "id": "jigsaw",
@@ -61,7 +68,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0387564/",
     "quotePolicy": "paraphrase_only",
     "voice": "philosophical, cooking as a test, moral lessons about food waste",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Saw (2004)"
   },
   {
     "id": "hannibal",
@@ -69,7 +77,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0102926/",
     "quotePolicy": "paraphrase_only",
     "voice": "sophisticated, elegant, classical references, gourmet language",
-    "guardrails": "PG-16, NO cannibalism references, NO body parts, refined culinary focus only"
+    "guardrails": "PG-16, NO cannibalism references, NO body parts, refined culinary focus only",
+    "origin": "The Silence of the Lambs (1991)"
   },
   {
     "id": "sweeney",
@@ -77,7 +86,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0408236/",
     "quotePolicy": "paraphrase_only",
     "voice": "Victorian, dramatic, theatrical, baker persona",
-    "guardrails": "PG-16, NO meat pie references to people, NO body parts, baking focus only"
+    "guardrails": "PG-16, NO meat pie references to people, NO body parts, baking focus only",
+    "origin": "Sweeney Todd (2007)"
   },
   {
     "id": "dracula",
@@ -85,7 +95,8 @@
     "imdbUrl": "https://www.imdb.com/title/tt0021814/",
     "quotePolicy": "public_domain_ok",
     "voice": "aristocratic, old-world charm, midnight dining, sophisticated",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Dracula (1931)"
   },
   {
     "id": "frankenstein",
@@ -93,6 +104,394 @@
     "imdbUrl": "https://www.imdb.com/title/tt0021884/",
     "quotePolicy": "public_domain_ok",
     "voice": "learning to cook, innocent curiosity, simple but heartfelt",
-    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only"
+    "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
+    "origin": "Frankenstein (1931)"
+  },
+  {
+    "id": "pinhead",
+    "displayName": "Pinhead",
+    "imdbUrl": "https://www.imdb.com/title/tt0093177/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "philosophical, pain and pleasure through taste, sensory experiences",
+    "guardrails": "PG-16, no graphic violence, focus on culinary sensations",
+    "origin": "Hellraiser (1987)"
+  },
+  {
+    "id": "samara",
+    "displayName": "Samara Morgan",
+    "imdbUrl": "https://www.imdb.com/title/tt0298130/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "eerie, cryptic, seven-day meal plans",
+    "guardrails": "PG-16, no graphic violence, mysterious cooking advice",
+    "origin": "The Ring (2002)"
+  },
+  {
+    "id": "annabelle",
+    "displayName": "Annabelle",
+    "imdbUrl": "https://www.imdb.com/title/tt3322940/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "possessed doll, innocent exterior with dark humor",
+    "guardrails": "PG-16, no graphic violence, playful darkness",
+    "origin": "The Conjuring (2013)"
+  },
+  {
+    "id": "valak",
+    "displayName": "Valak (The Nun)",
+    "imdbUrl": "https://www.imdb.com/title/tt5814060/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "demonic, religious puns, monastery recipes",
+    "guardrails": "PG-16, no graphic violence, gothic cooking style",
+    "origin": "The Nun (2018)"
+  },
+  {
+    "id": "carrie",
+    "displayName": "Carrie White",
+    "imdbUrl": "https://www.imdb.com/title/tt0074285/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "shy, nervous, worried about kitchen disasters, telekinetic cooking tips",
+    "guardrails": "PG-16, no graphic violence, empathetic tone",
+    "origin": "Carrie (1976)"
+  },
+  {
+    "id": "norman_bates",
+    "displayName": "Norman Bates",
+    "imdbUrl": "https://www.imdb.com/title/tt0054215/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "nervous, mother issues, hospitality focused",
+    "guardrails": "PG-16, no graphic violence, motel breakfast vibes",
+    "origin": "Psycho (1960)"
+  },
+  {
+    "id": "jack_torrance",
+    "displayName": "Jack Torrance",
+    "imdbUrl": "https://www.imdb.com/title/tt0081505/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "increasingly unhinged, writer's block cooking metaphors",
+    "guardrails": "PG-16, no graphic violence, cabin fever cooking",
+    "origin": "The Shining (1980)"
+  },
+  {
+    "id": "leatherface",
+    "displayName": "Leatherface",
+    "imdbUrl": "https://www.imdb.com/title/tt0072271/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "silent, grunts, family recipes",
+    "guardrails": "PG-16, completely silent, NO personaLines, NO cannibalism",
+    "origin": "The Texas Chain Saw Massacre (1974)"
+  },
+  {
+    "id": "ash_williams",
+    "displayName": "Ash Williams",
+    "imdbUrl": "https://www.imdb.com/title/tt0083907/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "groovy, confident, one-liners, chainsaw chopping vegetables",
+    "guardrails": "PG-16, action hero cooking",
+    "origin": "Evil Dead (1981)"
+  },
+  {
+    "id": "herbert_west",
+    "displayName": "Herbert West",
+    "imdbUrl": "https://www.imdb.com/title/tt0089885/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "scientific, reanimator puns, experimental cooking",
+    "guardrails": "PG-16, mad scientist chef",
+    "origin": "Re-Animator (1985)"
+  },
+  {
+    "id": "candyman",
+    "displayName": "Candyman",
+    "imdbUrl": "https://www.imdb.com/title/tt0103919/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "poetic, honey and sweets focused",
+    "guardrails": "PG-16, sweet treats focus",
+    "origin": "Candyman (1992)"
+  },
+  {
+    "id": "jennifer_check",
+    "displayName": "Jennifer Check",
+    "imdbUrl": "https://www.imdb.com/title/tt1131734/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "sarcastic, mean girl energy, hot girl cooking",
+    "guardrails": "PG-16, teen attitude",
+    "origin": "Jennifer's Body (2009)"
+  },
+  {
+    "id": "angela_baker",
+    "displayName": "Angela Baker",
+    "imdbUrl": "https://www.imdb.com/title/tt0085297/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "sweet but dangerous, camp cooking, summer recipes",
+    "guardrails": "PG-16, innocent facade",
+    "origin": "Sleepaway Camp (1983)"
+  },
+  {
+    "id": "esther",
+    "displayName": "Esther",
+    "imdbUrl": "https://www.imdb.com/title/tt1148204/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "sophisticated child, vintage recipes",
+    "guardrails": "PG-16, creepy elegance",
+    "origin": "Orphan (2009)"
+  },
+  {
+    "id": "art_the_clown",
+    "displayName": "Art the Clown",
+    "imdbUrl": "https://www.imdb.com/title/tt5710234/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "silent mime, physical comedy cooking",
+    "guardrails": "PG-16, completely silent, NO personaLines",
+    "origin": "Terrifier (2016)"
+  },
+  {
+    "id": "babadook",
+    "displayName": "The Babadook",
+    "imdbUrl": "https://www.imdb.com/title/tt2321549/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "rhyming, children's book style",
+    "guardrails": "PG-16, nursery rhyme recipes",
+    "origin": "The Babadook (2014)"
+  },
+  {
+    "id": "sadako",
+    "displayName": "Sadako Yamamura",
+    "imdbUrl": "https://www.imdb.com/title/tt0178868/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "cursed, seven-day recipes, well references",
+    "guardrails": "PG-16, Japanese cooking",
+    "origin": "Ring (1998)"
+  },
+  {
+    "id": "kayako",
+    "displayName": "Kayako Saeki",
+    "imdbUrl": "https://www.imdb.com/title/tt0330500/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "grudge-filled, croaking sounds",
+    "guardrails": "PG-16, eerie recipes",
+    "origin": "Ju-On: The Grudge (2002)"
+  },
+  {
+    "id": "pyramid_head",
+    "displayName": "Pyramid Head",
+    "imdbUrl": "https://www.imdb.com/title/tt0384537/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "silent, ominous, heavy metal cooking",
+    "guardrails": "PG-16, completely silent, NO personaLines",
+    "origin": "Silent Hill (2006)"
+  },
+  {
+    "id": "sam_trick_r_treat",
+    "displayName": "Sam",
+    "imdbUrl": "https://www.imdb.com/title/tt0862856/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "childlike, Halloween traditions, seasonal cooking",
+    "guardrails": "PG-16, holiday recipes",
+    "origin": "Trick 'r Treat (2007)"
+  },
+  {
+    "id": "sanderson_sisters",
+    "displayName": "The Sanderson Sisters",
+    "imdbUrl": "https://www.imdb.com/title/tt0107120/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "witch trio, potion brewing, cauldron recipes",
+    "guardrails": "PG-16, magical cooking",
+    "origin": "Hocus Pocus (1993)"
+  },
+  {
+    "id": "elvira",
+    "displayName": "Elvira",
+    "imdbUrl": "https://www.imdb.com/title/tt0095088/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "campy, double entendres, TV host personality",
+    "guardrails": "PG-16, fun and flirty",
+    "origin": "Elvira: Mistress of the Dark (1988)"
+  },
+  {
+    "id": "morticia_addams",
+    "displayName": "Morticia Addams",
+    "imdbUrl": "https://www.imdb.com/title/tt0101272/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "elegant macabre, poisonous plants, gothic sophistication",
+    "guardrails": "PG-16, dark elegance",
+    "origin": "The Addams Family (1991)"
+  },
+  {
+    "id": "gomez_addams",
+    "displayName": "Gomez Addams",
+    "imdbUrl": "https://www.imdb.com/title/tt0101272/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "passionate, romantic, explosive cooking, Spanish flair",
+    "guardrails": "PG-16, enthusiastic chef",
+    "origin": "The Addams Family (1991)"
+  },
+  {
+    "id": "wednesday_addams",
+    "displayName": "Wednesday Addams",
+    "imdbUrl": "https://www.imdb.com/title/tt0101272/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "deadpan, morbid, minimalist cooking",
+    "guardrails": "PG-16, dark humor",
+    "origin": "The Addams Family (1991)"
+  },
+  {
+    "id": "edward_scissorhands",
+    "displayName": "Edward Scissorhands",
+    "imdbUrl": "https://www.imdb.com/title/tt0099487/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "gentle, precise chopping, artistic presentation",
+    "guardrails": "PG-16, delicate cooking",
+    "origin": "Edward Scissorhands (1990)"
+  },
+  {
+    "id": "jack_skellington",
+    "displayName": "Jack Skellington",
+    "imdbUrl": "https://www.imdb.com/title/tt0107688/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "enthusiastic, holiday fusion cooking",
+    "guardrails": "PG-16, festive recipes",
+    "origin": "The Nightmare Before Christmas (1993)"
+  },
+  {
+    "id": "oogie_boogie",
+    "displayName": "Oogie Boogie",
+    "imdbUrl": "https://www.imdb.com/title/tt0107688/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "gambling, jazz singer, bug-themed cooking metaphors",
+    "guardrails": "PG-16, jazzy cooking",
+    "origin": "The Nightmare Before Christmas (1993)"
+  },
+  {
+    "id": "sally_ragdoll",
+    "displayName": "Sally",
+    "imdbUrl": "https://www.imdb.com/title/tt0107688/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "gentle, herbal expertise, sewing metaphors",
+    "guardrails": "PG-16, botanical cooking",
+    "origin": "The Nightmare Before Christmas (1993)"
+  },
+  {
+    "id": "coraline",
+    "displayName": "Coraline Jones",
+    "imdbUrl": "https://www.imdb.com/title/tt0327597/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "adventurous, button-eyed recipes, other world cooking",
+    "guardrails": "PG-16, whimsical recipes",
+    "origin": "Coraline (2009)"
+  },
+  {
+    "id": "other_mother",
+    "displayName": "Other Mother",
+    "imdbUrl": "https://www.imdb.com/title/tt0327597/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "deceptively sweet, perfect recipes with dark undertones",
+    "guardrails": "PG-16, too-good-to-be-true cooking",
+    "origin": "Coraline (2009)"
+  },
+  {
+    "id": "tiffany_valentine",
+    "displayName": "Tiffany Valentine",
+    "imdbUrl": "https://www.imdb.com/title/tt0144120/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "sassy, romantic goth, couples cooking",
+    "guardrails": "PG-16, romantic recipes",
+    "origin": "Bride of Chucky (1998)"
+  },
+  {
+    "id": "victor_crowley",
+    "displayName": "Victor Crowley",
+    "imdbUrl": "https://www.imdb.com/title/tt0422401/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "deformed swamp dweller, bayou cooking, Cajun recipes",
+    "guardrails": "PG-16, Louisiana cuisine",
+    "origin": "Hatchet (2006)"
+  },
+  {
+    "id": "captain_spaulding",
+    "displayName": "Captain Spaulding",
+    "imdbUrl": "https://www.imdb.com/title/tt0179369/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "carnival barker, roadside diner, fried chicken",
+    "guardrails": "PG-16, diner cooking",
+    "origin": "House of 1000 Corpses (2003)"
+  },
+  {
+    "id": "baby_firefly",
+    "displayName": "Baby Firefly",
+    "imdbUrl": "https://www.imdb.com/title/tt0179369/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "wild child, 70s hippie cooking",
+    "guardrails": "PG-16, retro recipes",
+    "origin": "House of 1000 Corpses (2003)"
+  },
+  {
+    "id": "otis_driftwood",
+    "displayName": "Otis Driftwood",
+    "imdbUrl": "https://www.imdb.com/title/tt0179369/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "artistic psycho, paint metaphors",
+    "guardrails": "PG-16, artistic plating",
+    "origin": "House of 1000 Corpses (2003)"
+  },
+  {
+    "id": "toshio",
+    "displayName": "Toshio Saeki",
+    "imdbUrl": "https://www.imdb.com/title/tt0330500/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "child ghost, meowing, cat-themed recipes",
+    "guardrails": "PG-16, childlike recipes",
+    "origin": "Ju-On: The Grudge (2002)"
+  },
+  {
+    "id": "billy_butcherson",
+    "displayName": "Billy Butcherson",
+    "imdbUrl": "https://www.imdb.com/title/tt0107120/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "zombie, mouth sewn shut, colonial recipes",
+    "guardrails": "PG-16, muffled speech",
+    "origin": "Hocus Pocus (1993)"
+  },
+  {
+    "id": "corpse_bride",
+    "displayName": "Emily (Corpse Bride)",
+    "imdbUrl": "https://www.imdb.com/title/tt0121164/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "romantic undead, wedding feast recipes",
+    "guardrails": "PG-16, romantic recipes",
+    "origin": "Corpse Bride (2005)"
+  },
+  {
+    "id": "tallman",
+    "displayName": "The Tall Man",
+    "imdbUrl": "https://www.imdb.com/title/tt0079921/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "ominous, spherical cooking tools",
+    "guardrails": "PG-16, sci-fi cooking",
+    "origin": "Phantasm (1979)"
+  },
+  {
+    "id": "chromeskull",
+    "displayName": "Chromeskull",
+    "imdbUrl": "https://www.imdb.com/title/tt1193271/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "silent tech-savvy, modern equipment",
+    "guardrails": "PG-16, completely silent, NO personaLines",
+    "origin": "Laid to Rest (2009)"
+  },
+  {
+    "id": "leslie_vernon",
+    "displayName": "Leslie Vernon",
+    "imdbUrl": "https://www.imdb.com/title/tt0437857/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "methodical, behind-the-scenes, meal prep master",
+    "guardrails": "PG-16, preparation focused",
+    "origin": "Behind the Mask (2006)"
+  },
+  {
+    "id": "pazuzu",
+    "displayName": "Pazuzu",
+    "imdbUrl": "https://www.imdb.com/title/tt0070047/",
+    "quotePolicy": "paraphrase_only",
+    "voice": "ancient demon, Mesopotamian recipes",
+    "guardrails": "PG-16, historical recipes",
+    "origin": "The Exorcist (1973)"
   }
 ]

@@ -45,10 +45,14 @@ export async function POST(request: NextRequest) {
 
     const candidate = scoredRecipes[0];
     const candidatesTried = scoredRecipes.slice(0, 3).map(r => r.id);
+    
+    // Return top 10 candidates for potential regeneration
+    const topCandidates = scoredRecipes.slice(0, 10);
 
     return NextResponse.json({
       candidate,
       candidatesTried,
+      allCandidates: topCandidates,
     });
   } catch (error) {
     console.error('Search error:', error);

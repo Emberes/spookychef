@@ -50,16 +50,20 @@
    5. npm run dev
    6. Öppna http://localhost:3000
 
-🎭 12 Personas redo:
-   Ghostface, Pennywise, Freddy, Chucky, Myers (tyst),
-   Jason (tyst), Beetlejuice, Jigsaw, Hannibal, Sweeney,
-   Dracula, Frankenstein
+🎭 55 Personas redo:
+   Horror classics: Ghostface, Pennywise, Freddy, Chucky, Myers, Jason, Hannibal
+   Silent killers: Leatherface, Art the Clown, Pyramid Head, Chromeskull
+   Gothic icons: Dracula, Morticia, Gomez, Wednesday, Edward Scissorhands
+   Supernatural: Samara, Kayako, Sadako, Annabelle, Valak, Babadook
+   Whimsical horror: Jack Skellington, Sally, Coraline, Beetlejuice, Elvira
+   And 30+ more varied personas!
 
 📊 Stats:
    ~25 filer skapade
    ~2000 rader kod
-   12 recept i korpus
-   50+ ingrediens-alias
+   1000 recept i korpus (varierade kök, dietkrav, svårighetsgrader)
+   55 personas (massiv variation)
+   53 ingrediens-alias
    100% av MVP-krav uppfyllda
 
 ✨ Redo för:
