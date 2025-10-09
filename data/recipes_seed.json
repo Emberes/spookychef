@@ -1,0 +1,110 @@
+[
+  {
+    "id": "pasta-tomato-garlic",
+    "title": "Enkel tomatpasta",
+    "ingredients": ["pasta", "tomat", "vitlök", "olivolja", "salt", "peppar"],
+    "tags": ["veg", "snabb"],
+    "timeMinutes": 20,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 620, "protein_g": 18 }
+  },
+  {
+    "id": "chicken-rice-curry",
+    "title": "Kycklingcurry med ris",
+    "ingredients": ["kyckling", "ris", "curry", "kokosmjölk", "lök", "vitlök", "ingefära"],
+    "tags": ["glutenfri"],
+    "timeMinutes": 35,
+    "difficulty": "medel",
+    "baseNutrition": { "kcal": 720, "protein_g": 38 }
+  },
+  {
+    "id": "veggie-stir-fry",
+    "title": "Wokad grönsaksröra",
+    "ingredients": ["paprika", "broccoli", "morötter", "sojasås", "sesamolja", "vitlök", "ingefära", "ris"],
+    "tags": ["veg", "vegan", "snabb"],
+    "timeMinutes": 25,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 480, "protein_g": 12 }
+  },
+  {
+    "id": "salmon-potatoes",
+    "title": "Ugnsbakad lax med potatis",
+    "ingredients": ["lax", "potatis", "citron", "dill", "smör", "salt", "peppar"],
+    "tags": ["glutenfri"],
+    "timeMinutes": 40,
+    "difficulty": "medel",
+    "baseNutrition": { "kcal": 680, "protein_g": 42 }
+  },
+  {
+    "id": "mushroom-risotto",
+    "title": "Svamprissotto",
+    "ingredients": ["risottoris", "svamp", "lök", "vitlök", "vitt vin", "parmesan", "smör", "grönsaksbuljong"],
+    "tags": ["veg"],
+    "timeMinutes": 45,
+    "difficulty": "medel",
+    "baseNutrition": { "kcal": 560, "protein_g": 16 }
+  },
+  {
+    "id": "beef-tacos",
+    "title": "Kryddiga nötfärstacos",
+    "ingredients": ["nötfärs", "tacoskal", "sallad", "tomat", "cheddar", "gräddfil", "taco krydda", "lök"],
+    "tags": [],
+    "timeMinutes": 30,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 820, "protein_g": 35 }
+  },
+  {
+    "id": "chickpea-curry",
+    "title": "Kikärtscurry",
+    "ingredients": ["kikärtor", "kokosmjölk", "tomat", "curry", "spenat", "vitlök", "ingefära", "lök"],
+    "tags": ["veg", "vegan", "glutenfri"],
+    "timeMinutes": 30,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 520, "protein_g": 18 }
+  },
+  {
+    "id": "omelette-veggies",
+    "title": "Omelett med grönsaker",
+    "ingredients": ["ägg", "paprika", "tomat", "lök", "ost", "smör", "salt", "peppar"],
+    "tags": ["veg", "glutenfri", "snabb"],
+    "timeMinutes": 15,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 420, "protein_g": 28 }
+  },
+  {
+    "id": "lentil-soup",
+    "title": "Linssoppa",
+    "ingredients": ["linser", "morötter", "lök", "vitlök", "tomat", "grönsaksbuljong", "kummin", "olivolja"],
+    "tags": ["veg", "vegan", "glutenfri"],
+    "timeMinutes": 40,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 380, "protein_g": 22 }
+  },
+  {
+    "id": "pesto-pasta",
+    "title": "Pasta med pesto",
+    "ingredients": ["pasta", "basilika pesto", "pinjenötter", "parmesan", "körsbärstomater", "olivolja"],
+    "tags": ["veg", "snabb"],
+    "timeMinutes": 15,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 680, "protein_g": 20 }
+  },
+  {
+    "id": "shrimp-pasta",
+    "title": "Räkpasta med vitlök",
+    "ingredients": ["pasta", "räkor", "vitlök", "grädde", "parmesan", "persilja", "citron"],
+    "tags": ["snabb"],
+    "timeMinutes": 20,
+    "difficulty": "lätt",
+    "baseNutrition": { "kcal": 720, "protein_g": 36 }
+  },
+  {
+    "id": "vegetable-lasagna",
+    "title": "Vegetarisk lasagne",
+    "ingredients": ["lasagneplattor", "zucchini", "aubergine", "tomat", "mozzarella", "ricotta", "basilika", "vitlök"],
+    "tags": ["veg"],
+    "timeMinutes": 60,
+    "difficulty": "svår",
+    "baseNutrition": { "kcal": 620, "protein_g": 24 }
+  }
+]
