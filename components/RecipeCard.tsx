@@ -76,6 +76,18 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
 
       {/* Recipe Content */}
       <div className="p-6 space-y-6">
+        {/* Recipe Image */}
+        {recipe.imageUrl && (
+          <div className="w-full aspect-square relative rounded-lg overflow-hidden bg-muted">
+            <img 
+              src={recipe.imageUrl} 
+              alt={recipe.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         {/* Title */}
         <h1 className="text-3xl font-bold">{recipe.title}</h1>
 

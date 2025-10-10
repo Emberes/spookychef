@@ -19,6 +19,7 @@ export const RecipeResponseSchema = z.object({
   ),
   steps: z.array(z.string()),
   personaLines: z.array(z.string()).max(1),
+  imageUrl: z.string().optional(),
 });
 
 export type RecipeResponse = z.infer<typeof RecipeResponseSchema>;

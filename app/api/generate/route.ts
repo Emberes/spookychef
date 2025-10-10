@@ -19,13 +19,13 @@ function getOrCreatePersona(chatId: string) {
 
 function buildSystemPrompt(persona: typeof personasData[0]) {
   const isSilent = persona.voice.includes('silent') || persona.guardrails.includes('silent');
-  
+
   return `You are ${persona.displayName} creating a horror-themed recipe.
 
 Voice: ${persona.voice}
 Language: Swedish for recipe, English for persona line
 Title format: Sentence case (first word only)
-${isSilent 
+${isSilent
   ? 'ONE dramatic trailer-style voiceover describing the character (e.g., "In a world of shadows, one creature hungers...")'
   : 'ONE persona line in English as spoken by the character'}
 
@@ -53,10 +53,10 @@ function buildUserPrompt(
 ) {
   const ingredientsText = userIngredients.join(', ');
   const isSilent = persona.voice.includes('silent') || persona.guardrails.includes('silent');
-  const personaLine = isSilent 
-    ? 'Add ONE dramatic trailer-style voiceover describing the character.' 
+  const personaLine = isSilent
+    ? 'Add ONE dramatic trailer-style voiceover describing the character.'
     : 'Add ONE English persona line spoken by the character.';
-  const allergyWarning = allergies.length > 0 
+  const allergyWarning = allergies.length > 0
     ? `\n\nCRITICAL - ALLERGIES: User is allergic to ${allergies.join(', ')}. NEVER use these ingredients or derivatives (e.g., if allergic to eggs, avoid mayonnaise). Replace with safe alternatives.`
     : '';
 
@@ -81,16 +81,16 @@ export async function POST(request: NextRequest) {
     }
 
     const persona = getOrCreatePersona(chatId);
-    
+
     console.log('⚡ Generating new recipe from ingredients:', userIngredients);
-    
+
     const systemPrompt = buildSystemPrompt(persona);
     const userPrompt = buildUserPrompt(userIngredients, diet, allergies, persona);
-    
+
     console.log('📋 Using systemInstruction:', systemPrompt.substring(0, 100) + '...');
-    
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash-exp',
+
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash-lite',
       generationConfig: {
         maxOutputTokens: 4096,
       },
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
         // Send persona information immediately
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ 
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
           persona: {
             id: persona.id,
             displayName: persona.displayName,
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
             let fullText = '';
             let chunkCount = 0;
-            
+
             // Stream chunks as they arrive
             for await (const chunk of result.stream) {
               chunkCount++;
@@ -138,18 +138,18 @@ export async function POST(request: NextRequest) {
               }
               const chunkText = chunk.text();
               fullText += chunkText;
-              
+
               // Send chunk to client
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: chunkText })}\n\n`));
             }
 
             // Clean up potential markdown formatting
             fullText = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            
+
             // Validate the complete response
             const recipeData = JSON.parse(fullText);
             const validatedRecipe = RecipeResponseSchema.parse(recipeData);
-            
+
             // Debug logging
             console.log('✅ Recipe validated');
             console.log('Steps count:', validatedRecipe.steps?.length || 0);
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
 
             // Post-validation: check diet and allergen compliance
             const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
-            
+
             if (diet.length > 0 && violatesDiet(recipeIngredients, diet)) {
               console.warn('Recipe violates diet constraints, retrying...');
               throw new Error('Diet violation');
@@ -171,9 +171,15 @@ export async function POST(request: NextRequest) {
               throw new Error('Allergen violation');
             }
 
+            // Generate image URL using Pollinations.ai
+            const imagePrompt = `Horror themed ${validatedRecipe.title}, dark atmospheric food photography, eerie lighting, cinematic, high quality`;
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=768&nologo=true&enhance=true`;
+            console.log('🖼️  Generated image URL');
+
             // Success! Send final complete recipe
             const response = {
               ...validatedRecipe,
+              imageUrl,
               persona: {
                 id: persona.id,
                 displayName: persona.displayName,
@@ -181,13 +187,13 @@ export async function POST(request: NextRequest) {
                 origin: persona.origin,
               }
             };
-            
+
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: response })}\n\n`));
             success = true;
 
           } catch (parseError) {
             console.error(`Attempt ${attempts} failed:`, parseError);
-            
+
             if (attempts >= maxAttempts) {
               // Fallback: return simple recipe
               console.log('Using fallback recipe');
@@ -216,7 +222,7 @@ export async function POST(request: NextRequest) {
                   origin: persona.origin,
                 }
               };
-              
+
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: fallbackResponse })}\n\n`));
               success = true;
             }
