@@ -139,6 +139,7 @@ export default function Home() {
       let buffer = '';
       let totalChunks = 0;
       const estimatedTotalChunks = 100;
+      let currentPersona = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -152,6 +153,12 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+            
+            if (data.persona && !currentPersona) {
+              // Update persona if it changed
+              currentPersona = data.persona;
+              setPersona(currentPersona);
+            }
             
             if (data.chunk) {
               totalChunks++;
@@ -214,6 +221,7 @@ export default function Home() {
       let buffer = '';
       let totalChunks = 0;
       const estimatedTotalChunks = 100;
+      let currentPersona = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -227,6 +235,12 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+            
+            if (data.persona && !currentPersona) {
+              // Show new persona immediately
+              currentPersona = data.persona;
+              setPersona(currentPersona);
+            }
             
             if (data.chunk) {
               totalChunks++;

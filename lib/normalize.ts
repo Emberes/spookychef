@@ -25,8 +25,8 @@ export function weightedJaccard(userIngredients: string[], recipeIngredients: st
   const userSet = new Set(userIngredients.map(normalizeIngredient));
   const recipeSet = new Set(recipeIngredients.map(normalizeIngredient));
   
-  const intersection = new Set([...userSet].filter(x => recipeSet.has(x)));
-  const union = new Set([...userSet, ...recipeSet]);
+  const intersection = new Set(Array.from(userSet).filter(x => recipeSet.has(x)));
+  const union = new Set([...Array.from(userSet), ...Array.from(recipeSet)]);
   
   if (union.size === 0) return 0;
   

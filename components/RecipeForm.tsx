@@ -27,7 +27,7 @@ export default function RecipeForm({ onSubmit, isLoading, disabled }: RecipeForm
       .filter(s => s.length > 0);
     
     if (items.length > 0) {
-      setIngredients(prev => [...new Set([...prev, ...items])]);
+      setIngredients(prev => Array.from(new Set([...prev, ...items])));
       setIngredientInput('');
     }
   };

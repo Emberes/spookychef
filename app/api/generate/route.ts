@@ -76,7 +76,12 @@ export async function POST(request: NextRequest) {
     const persona = getOrCreatePersona(chatId);
     
     console.log('⚡ Generating new recipe from ingredients:', userIngredients);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.5-flash',
+      generationConfig: {
+        maxOutputTokens: 4096,
+      }
+    });
 
     const systemPrompt = buildSystemPrompt(persona);
     const userPrompt = buildUserPrompt(userIngredients, diet, allergies, persona);
