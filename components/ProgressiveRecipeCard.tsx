@@ -14,6 +14,7 @@ interface ProgressiveRecipeCardProps {
 }
 
 const preparationSteps = [
+  'arbetar på receptet...',
   'hämtar ingredienser från skafferiet...',
   'förbereder arbetsbänken...',
   'tvättar händerna noggrant...',
@@ -21,6 +22,7 @@ const preparationSteps = [
   'sätter på förklädet...',
   'värmer upp spisen...',
   'plockar fram redskap...',
+  'förbereder mise en place...',
 ];
 
 export default function ProgressiveRecipeCard({ persona, progress }: ProgressiveRecipeCardProps) {
@@ -30,7 +32,6 @@ export default function ProgressiveRecipeCard({ persona, progress }: Progressive
   const [showIngredients, setShowIngredients] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
   const [currentActivity, setCurrentActivity] = useState(0);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     // Progressively reveal sections with slight delays (doubled timing)
@@ -50,18 +51,13 @@ export default function ProgressiveRecipeCard({ persona, progress }: Progressive
   }, []);
 
   useEffect(() => {
-    // Cycle through preparation steps every 1.5 seconds until progress starts
-    if (progress > 0) {
-      setIsGenerating(true);
-      return;
-    }
-
+    // Cycle through preparation steps every 1.5 seconds continuously
     const interval = setInterval(() => {
       setCurrentActivity((prev) => (prev + 1) % preparationSteps.length);
     }, 1500);
 
     return () => clearInterval(interval);
-  }, [progress]);
+  }, []);
 
   return (
     <div className="mt-8 bg-card rounded-lg border border-border shadow-xl overflow-hidden">
@@ -100,31 +96,24 @@ export default function ProgressiveRecipeCard({ persona, progress }: Progressive
 
       {/* Progress Bar */}
       <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-4 border-b border-border">
-        {isGenerating && (
-          <>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">
-                {progress < 95 ? 'Skapar recept...' : 'Avslutar...'}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {Math.round(progress)}%
-              </span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-              <div 
-                className="bg-primary h-full transition-all duration-300 ease-out rounded-full"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </>
-        )}
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-foreground">
+            {progress < 95 ? 'Skapar recept...' : 'Avslutar...'}
+          </span>
+          <span className="text-sm text-muted-foreground">
+            {Math.round(progress)}%
+          </span>
+        </div>
+        <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+          <div 
+            className="bg-primary h-full transition-all duration-300 ease-out rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
           <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
           <span>
-            {isGenerating 
-              ? `${persona.displayName} arbetar på receptet...`
-              : `${persona.displayName} ${preparationSteps[currentActivity]}`
-            }
+            {`${persona.displayName} ${preparationSteps[currentActivity]}`}
           </span>
         </div>
       </div>

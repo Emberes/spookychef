@@ -25,7 +25,11 @@ function buildSystemPrompt(persona: typeof personasData[0]) {
 Voice: ${persona.voice}
 Language: Swedish for recipe, English for persona line
 Title format: Sentence case (first word only)
-${isSilent ? 'NO persona lines - empty array' : 'ONE persona line in English'}
+${isSilent 
+  ? 'ONE dramatic trailer-style voiceover describing the character (e.g., "In a world of shadows, one creature hungers...")'
+  : 'ONE persona line in English as spoken by the character'}
+
+IMPORTANT: Each step must be minimum 120 characters long. Write detailed, descriptive instructions in character voice.
 
 Return JSON:
 {
@@ -36,8 +40,8 @@ Return JSON:
   "dietTags": ["string"],
   "nutrition": {"kcal": number, "protein_g": number},
   "ingredients": [{"name": "string", "qty": number|string, "unit": "string"}],
-  "steps": ["string (Swedish, in character voice)"],
-  "personaLines": [${isSilent ? '' : '"string"'}]
+  "steps": ["string (Swedish, min 120 chars, in character voice)"],
+  "personaLines": ["string (${isSilent ? 'trailer voiceover' : 'character quote'})"]
 }`;
 }
 
@@ -48,7 +52,10 @@ function buildUserPrompt(
   persona: typeof personasData[0]
 ) {
   const ingredientsText = userIngredients.join(', ');
-  const personaLine = persona.voice.includes('silent') ? 'No persona line.' : 'Add ONE English persona line.';
+  const isSilent = persona.voice.includes('silent') || persona.guardrails.includes('silent');
+  const personaLine = isSilent 
+    ? 'Add ONE dramatic trailer-style voiceover describing the character.' 
+    : 'Add ONE English persona line spoken by the character.';
   const allergyWarning = allergies.length > 0 
     ? `\n\nCRITICAL - ALLERGIES: User is allergic to ${allergies.join(', ')}. NEVER use these ingredients or derivatives (e.g., if allergic to eggs, avoid mayonnaise). Replace with safe alternatives.`
     : '';
@@ -76,15 +83,19 @@ export async function POST(request: NextRequest) {
     const persona = getOrCreatePersona(chatId);
     
     console.log('⚡ Generating new recipe from ingredients:', userIngredients);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.5-flash',
-      generationConfig: {
-        maxOutputTokens: 4096,
-      }
-    });
-
+    
     const systemPrompt = buildSystemPrompt(persona);
     const userPrompt = buildUserPrompt(userIngredients, diet, allergies, persona);
+    
+    console.log('📋 Using systemInstruction:', systemPrompt.substring(0, 100) + '...');
+    
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.0-flash-exp',
+      generationConfig: {
+        maxOutputTokens: 4096,
+      },
+      systemInstruction: systemPrompt,
+    });
 
     // Create a streaming response
     const encoder = new TextEncoder();
@@ -106,17 +117,25 @@ export async function POST(request: NextRequest) {
 
         while (attempts < maxAttempts && !success) {
           attempts++;
+          console.log(`🔄 Attempt ${attempts} starting...`);
+          const attemptStartTime = Date.now();
 
           try {
+            console.log('📤 Sending request to Gemini API (streaming)...');
             const result = await model.generateContentStream([
-              { text: systemPrompt },
               { text: userPrompt + (attempts > 1 ? '\n\nIMPORTANT: Return ONLY valid JSON, no markdown or extra text!' : '') }
             ]);
+            console.log(`⏱️  First response received after ${Date.now() - attemptStartTime}ms`);
 
             let fullText = '';
+            let chunkCount = 0;
             
             // Stream chunks as they arrive
             for await (const chunk of result.stream) {
+              chunkCount++;
+              if (chunkCount === 1) {
+                console.log(`📦 First chunk received after ${Date.now() - attemptStartTime}ms`);
+              }
               const chunkText = chunk.text();
               fullText += chunkText;
               
@@ -126,7 +145,7 @@ export async function POST(request: NextRequest) {
 
             // Clean up potential markdown formatting
             fullText = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
+            
             // Validate the complete response
             const recipeData = JSON.parse(fullText);
             const validatedRecipe = RecipeResponseSchema.parse(recipeData);
@@ -137,6 +156,7 @@ export async function POST(request: NextRequest) {
             if (validatedRecipe.steps?.length > 0) {
               console.log('First step:', validatedRecipe.steps[0].substring(0, 50) + '...');
             }
+            console.log(`⏱️  Total attempt time: ${Date.now() - attemptStartTime}ms`);
 
             // Post-validation: check diet and allergen compliance
             const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
