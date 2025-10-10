@@ -32,19 +32,7 @@ export const SearchRequestSchema = z.object({
 export type SearchRequest = z.infer<typeof SearchRequestSchema>;
 
 export const GenerateRequestSchema = z.object({
-  candidate: z.object({
-    id: z.string(),
-    title: z.string(),
-    ingredients: z.array(z.string()),
-    tags: z.array(z.string()),
-    timeMinutes: z.number(),
-    difficulty: z.string(),
-    baseNutrition: z.object({
-      kcal: z.number(),
-      protein_g: z.number(),
-    }),
-  }),
-  userIngredients: z.array(z.string()).optional().default([]),
+  userIngredients: z.array(z.string()),
   chatId: z.string(),
   diet: z.array(z.string()).optional().default([]),
   allergies: z.array(z.string()).optional().default([]),

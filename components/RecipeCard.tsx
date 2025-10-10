@@ -51,7 +51,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
           <div>
             <h3 className="text-sm text-muted-foreground mb-1">Recept från</h3>
             <h2 className="text-2xl font-bold text-primary">{persona.displayName}</h2>
-            {persona.origin && persona.movieImdbUrl && (
+            {persona.origin && (
               <a 
                 href={persona.movieImdbUrl}
                 target="_blank"
@@ -60,9 +60,6 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
               >
                 {persona.origin}
               </a>
-            )}
-            {persona.origin && !persona.movieImdbUrl && (
-              <p className="text-sm text-muted-foreground mt-1 italic">{persona.origin}</p>
             )}
           </div>
           <a

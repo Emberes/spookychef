@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeCard from '@/components/RecipeCard';
+import ProgressiveRecipeCard from '@/components/ProgressiveRecipeCard';
 import { RecipeResponse } from '@/lib/schema';
 
 export default function Home() {
@@ -11,16 +12,14 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chatId, setChatId] = useState(() => Math.random().toString(36).substring(7));
+  const [progress, setProgress] = useState<number>(0);
   
-  // Store search criteria and candidates for regeneration
+  // Store search criteria for regeneration
   const [searchCriteria, setSearchCriteria] = useState<{
     ingredients: string[];
     diet: string[];
     allergies: string[];
   } | null>(null);
-  const [allCandidates, setAllCandidates] = useState<any[]>([]);
-  const [currentCandidateIndex, setCurrentCandidateIndex] = useState(0);
-  const [currentCandidate, setCurrentCandidate] = useState<any>(null);
 
   const handleGenerateRecipe = async (
     ingredients: string[],
@@ -29,37 +28,19 @@ export default function Home() {
   ) => {
     setIsLoading(true);
     setError(null);
+    setRecipe(null);
+    setProgress(0);
 
     try {
       // Store search criteria for regeneration
       setSearchCriteria({ ingredients, diet, allergies });
-      
-      // Step 1: Search for candidates
-      const searchRes = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredients, diet, allergies }),
-      });
 
-      if (!searchRes.ok) {
-        const errorData = await searchRes.json();
-        throw new Error(errorData.error || 'Failed to search recipes');
-      }
-
-      const { candidate, allCandidates } = await searchRes.json();
-      
-      // Store all candidates for regeneration
-      setAllCandidates(allCandidates || [candidate]);
-      setCurrentCandidateIndex(0);
-      setCurrentCandidate(candidate);
-
-      // Step 2: Generate persona-ified recipe
+      // Generate recipe with streaming
       const generateRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          candidate,
-          userIngredients: ingredients, // Send original user input
+          userIngredients: ingredients,
           chatId,
           diet,
           allergies,
@@ -67,42 +48,77 @@ export default function Home() {
       });
 
       if (!generateRes.ok) {
-        const errorData = await generateRes.json();
-        throw new Error(errorData.error || 'Failed to generate recipe');
+        throw new Error('Failed to generate recipe');
       }
 
-      const recipeData = await generateRes.json();
-      setRecipe(recipeData);
-      setPersona(recipeData.persona);
+      const reader = generateRes.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let buffer = '';
+      let totalChunks = 0;
+      const estimatedTotalChunks = 100;
+      let currentPersona = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            
+            if (data.persona && !currentPersona) {
+              // Show persona immediately
+              currentPersona = data.persona;
+              setPersona(currentPersona);
+            }
+            
+            if (data.chunk) {
+              totalChunks++;
+              const newProgress = Math.min(95, (totalChunks / estimatedTotalChunks) * 100);
+              setProgress(newProgress);
+            }
+            
+            if (data.done && data.recipe) {
+              setProgress(100);
+              setRecipe(data.recipe);
+              setPersona(data.recipe.persona);
+              setIsLoading(false);
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
       setIsLoading(false);
+      setProgress(0);
     }
   };
 
   const handleRegenerate = async () => {
-    if (!searchCriteria || allCandidates.length === 0) return;
+    if (!searchCriteria) return;
 
     setIsLoading(true);
     setError(null);
-    setRecipe(null); // Clear old recipe to show skeleton
+    setRecipe(null);
+    setProgress(0);
 
     try {
-      // Get next candidate (cycle through the list)
-      const nextIndex = (currentCandidateIndex + 1) % allCandidates.length;
-      const nextCandidate = allCandidates[nextIndex];
-      setCurrentCandidateIndex(nextIndex);
-      setCurrentCandidate(nextCandidate);
-
-      // Generate with next candidate
       const generateRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          candidate: nextCandidate,
-          userIngredients: searchCriteria.ingredients, // Send original user input
+          userIngredients: searchCriteria.ingredients,
           chatId,
           diet: searchCriteria.diet,
           allergies: searchCriteria.allergies,
@@ -110,40 +126,74 @@ export default function Home() {
       });
 
       if (!generateRes.ok) {
-        const errorData = await generateRes.json();
-        throw new Error(errorData.error || 'Failed to generate recipe');
+        throw new Error('Failed to generate recipe');
       }
 
-      const recipeData = await generateRes.json();
-      setRecipe(recipeData);
-      setPersona(recipeData.persona);
+      const reader = generateRes.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let buffer = '';
+      let totalChunks = 0;
+      const estimatedTotalChunks = 100;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            
+            if (data.chunk) {
+              totalChunks++;
+              const newProgress = Math.min(95, (totalChunks / estimatedTotalChunks) * 100);
+              setProgress(newProgress);
+            }
+            
+            if (data.done && data.recipe) {
+              setProgress(100);
+              setRecipe(data.recipe);
+              setPersona(data.recipe.persona);
+              setIsLoading(false);
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
       setIsLoading(false);
+      setProgress(0);
     }
   };
 
   const handleChangeChef = async () => {
-    if (!searchCriteria || !currentCandidate) return;
+    if (!searchCriteria) return;
 
     setIsLoading(true);
     setError(null);
     setRecipe(null);
+    setProgress(0);
 
     try {
       // Generate new chatId to get a different persona
       const newChatId = Math.random().toString(36).substring(7);
       setChatId(newChatId);
 
-      // Regenerate with same candidate but new persona
       const generateRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          candidate: currentCandidate,
-          userIngredients: searchCriteria.ingredients, // Send original user input
+          userIngredients: searchCriteria.ingredients,
           chatId: newChatId,
           diet: searchCriteria.diet,
           allergies: searchCriteria.allergies,
@@ -151,18 +201,53 @@ export default function Home() {
       });
 
       if (!generateRes.ok) {
-        const errorData = await generateRes.json();
-        throw new Error(errorData.error || 'Failed to generate recipe');
+        throw new Error('Failed to generate recipe');
       }
 
-      const recipeData = await generateRes.json();
-      setRecipe(recipeData);
-      setPersona(recipeData.persona);
+      const reader = generateRes.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      let buffer = '';
+      let totalChunks = 0;
+      const estimatedTotalChunks = 100;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            
+            if (data.chunk) {
+              totalChunks++;
+              const newProgress = Math.min(95, (totalChunks / estimatedTotalChunks) * 100);
+              setProgress(newProgress);
+            }
+            
+            if (data.done && data.recipe) {
+              setProgress(100);
+              setRecipe(data.recipe);
+              setPersona(data.recipe.persona);
+              setIsLoading(false);
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
       setIsLoading(false);
+      setProgress(0);
     }
   };
 
@@ -200,15 +285,24 @@ export default function Home() {
           />
         )}
 
-        {isLoading && (
+        {isLoading && persona && (
+          <ProgressiveRecipeCard
+            persona={persona}
+            progress={progress}
+          />
+        )}
+
+        {isLoading && !persona && (
           <div className="mt-8 p-8 bg-card rounded-lg border border-border">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-muted rounded w-3/4"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-              <div className="space-y-2">
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-5/6"></div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-foreground">
+                  Väljer horror-kock...
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                <span>Förbereder recept...</span>
               </div>
             </div>
           </div>

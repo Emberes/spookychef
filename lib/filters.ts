@@ -62,7 +62,15 @@ export function containsAllergens(recipeIngredients: string[], allergies: string
         break;
       case 'ägg':
       case 'egg':
-        if (normalizedIngredients.some(ing => ing.includes('ägg'))) return true;
+        // Check for eggs and egg-containing products
+        if (normalizedIngredients.some(ing => 
+          ing.includes('ägg') || ing.includes('majonnäs') || ing.includes('majonäs') || 
+          ing.includes('mayonnaise') || ing.includes('aioli')
+        )) return true;
+        break;
+      default:
+        // Generic allergen check - if allergen is directly in ingredients
+        if (normalizedIngredients.some(ing => ing.includes(normalizedAllergen))) return true;
         break;
     }
   }
