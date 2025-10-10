@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const RecipeResponseSchema = z.object({
   personaId: z.string(),
   title: z.string(),
+  imagePrompt: z.string().optional(),
   timeMinutes: z.number().positive(),
   difficulty: z.enum(['lätt', 'medel', 'svår']),
   dietTags: z.array(z.string()),

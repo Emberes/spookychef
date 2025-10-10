@@ -35,6 +35,7 @@ Return JSON:
 {
   "personaId": "${persona.id}",
   "title": "string (Swedish, sentence case)",
+  "imagePrompt": "string (English description for image generation: dish name, main ingredients, horror style)",
   "timeMinutes": number,
   "difficulty": "lätt"|"medel"|"svår",
   "dietTags": ["string"],
@@ -172,8 +173,10 @@ export async function POST(request: NextRequest) {
             }
 
             // Generate image URL using Pollinations.ai
-            const imagePrompt = `Horror themed ${validatedRecipe.title}, dark atmospheric food photography, eerie lighting, cinematic, high quality`;
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=768&nologo=true&enhance=true`;
+            const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
+            const basePrompt = validatedRecipe.imagePrompt || `A plate of ${validatedRecipe.title}`;
+            const imagePrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=432&nologo=true&enhance=true`;
             console.log('🖼️  Generated image URL');
 
             // Success! Send final complete recipe

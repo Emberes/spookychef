@@ -2,7 +2,7 @@
 
 import { RecipeResponse } from '@/lib/schema';
 import { Clock, ChefHat, Flame, ExternalLink, Copy, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface RecipeCardProps {
   recipe: RecipeResponse;
@@ -19,6 +19,15 @@ interface RecipeCardProps {
 
 export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to recipe card when it's mounted
+    if (cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [recipe.title]); // Trigger when recipe changes
 
   const copyToClipboard = () => {
     const text = `
@@ -44,7 +53,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
   };
 
   return (
-    <div className="mt-8 bg-card rounded-lg border border-border shadow-xl overflow-hidden">
+    <div ref={cardRef} className="mt-8 bg-card rounded-lg border border-border shadow-xl overflow-hidden">
       {/* Persona Header */}
       <div className="bg-gradient-to-r from-primary/20 to-primary/5 p-6 border-b border-border">
         <div className="flex items-center justify-between">
@@ -78,12 +87,19 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
       <div className="p-6 space-y-6">
         {/* Recipe Image */}
         {recipe.imageUrl && (
-          <div className="w-full aspect-square relative rounded-lg overflow-hidden bg-muted">
+          <div className="w-full aspect-video relative rounded-lg overflow-hidden bg-muted">
+            {!imageLoaded && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted/50">
+                <div className="animate-spin h-8 w-8 border-4 border-muted-foreground/30 border-t-muted-foreground rounded-full"></div>
+                <span className="text-sm text-muted-foreground">Genererar bild...</span>
+              </div>
+            )}
             <img 
               src={recipe.imageUrl} 
               alt={recipe.title}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               loading="lazy"
+              onLoad={() => setImageLoaded(true)}
             />
           </div>
         )}
