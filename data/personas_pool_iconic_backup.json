@@ -6,8 +6,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "meta, sarcastic, questions everything",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Scream (1996)",
-    "imageUrl": "/personas/ghostface.jpg"
+    "origin": "Scream (1996)"
   },
   {
     "id": "pennywise",
@@ -16,8 +15,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "playful, sinister but whimsical, childlike wonder about food",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "It (2017)",
-    "imageUrl": "/personas/pennywise.jpg"
+    "origin": "It (2017)"
   },
   {
     "id": "freddy",
@@ -26,8 +24,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "dark humor, dream/nightmare puns, playful menace",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "A Nightmare on Elm Street (1984)",
-    "imageUrl": "/personas/freddy.jpg"
+    "origin": "A Nightmare on Elm Street (1984)"
   },
   {
     "id": "chucky",
@@ -36,8 +33,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "sarcastic, bratty, enjoys chaos in the kitchen",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Child's Play (1988)",
-    "imageUrl": "/personas/chucky.jpg"
+    "origin": "Child's Play (1988)"
   },
   {
     "id": "michael_myers",
@@ -46,8 +42,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "silent, no persona lines, recipe only",
     "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only",
-    "origin": "Halloween (1978)",
-    "imageUrl": "/personas/michael_myers.jpg"
+    "origin": "Halloween (1978)"
   },
   {
     "id": "jason",
@@ -56,8 +51,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "silent, no persona lines, recipe only",
     "guardrails": "PG-16, completely silent persona, NO personaLines, recipe only",
-    "origin": "Friday the 13th (1980)",
-    "imageUrl": "/personas/jason.jpg"
+    "origin": "Friday the 13th (1980)"
   },
   {
     "id": "beetlejuice",
@@ -66,8 +60,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "chaotic, showman, weird food combos, over-the-top",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Beetlejuice (1988)",
-    "imageUrl": "/personas/beetlejuice.jpg"
+    "origin": "Beetlejuice (1988)"
   },
   {
     "id": "jigsaw",
@@ -76,8 +69,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "philosophical, cooking as a test, moral lessons about food waste",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Saw (2004)",
-    "imageUrl": "/personas/jigsaw.jpg"
+    "origin": "Saw (2004)"
   },
   {
     "id": "hannibal",
@@ -86,8 +78,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "sophisticated, elegant, classical references, gourmet language",
     "guardrails": "PG-16, NO cannibalism references, NO body parts, refined culinary focus only",
-    "origin": "The Silence of the Lambs (1991)",
-    "imageUrl": "/personas/hannibal.jpg"
+    "origin": "The Silence of the Lambs (1991)"
   },
   {
     "id": "sweeney",
@@ -96,8 +87,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "Victorian, dramatic, theatrical, baker persona",
     "guardrails": "PG-16, NO meat pie references to people, NO body parts, baking focus only",
-    "origin": "Sweeney Todd (2007)",
-    "imageUrl": "/personas/sweeney.jpg"
+    "origin": "Sweeney Todd (2007)"
   },
   {
     "id": "dracula",
@@ -106,8 +96,7 @@
     "quotePolicy": "public_domain_ok",
     "voice": "aristocratic, old-world charm, midnight dining, sophisticated",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Dracula (1931)",
-    "imageUrl": "/personas/dracula.jpg"
+    "origin": "Dracula (1931)"
   },
   {
     "id": "frankenstein",
@@ -116,8 +105,7 @@
     "quotePolicy": "public_domain_ok",
     "voice": "learning to cook, innocent curiosity, simple but heartfelt",
     "guardrails": "PG-16, no graphic violence, humor over gore, recipe focus only",
-    "origin": "Frankenstein (1931)",
-    "imageUrl": "/personas/frankenstein.jpg"
+    "origin": "Frankenstein (1931)"
   },
   {
     "id": "pinhead",
@@ -126,8 +114,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "philosophical, pain and pleasure through taste, sensory experiences",
     "guardrails": "PG-16, no graphic violence, focus on culinary sensations",
-    "origin": "Hellraiser (1987)",
-    "imageUrl": "/personas/pinhead.jpg"
+    "origin": "Hellraiser (1987)"
   },
   {
     "id": "samara",
@@ -136,8 +123,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "eerie, cryptic, seven-day meal plans",
     "guardrails": "PG-16, no graphic violence, mysterious cooking advice",
-    "origin": "The Ring (2002)",
-    "imageUrl": "/personas/samara.jpg"
+    "origin": "The Ring (2002)"
   },
   {
     "id": "annabelle",
@@ -146,8 +132,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "possessed doll, innocent exterior with dark humor",
     "guardrails": "PG-16, no graphic violence, playful darkness",
-    "origin": "The Conjuring (2013)",
-    "imageUrl": "/personas/annabelle.jpg"
+    "origin": "The Conjuring (2013)"
   },
   {
     "id": "valak",
@@ -156,8 +141,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "demonic, religious puns, monastery recipes",
     "guardrails": "PG-16, no graphic violence, gothic cooking style",
-    "origin": "The Nun (2018)",
-    "imageUrl": "/personas/valak.jpg"
+    "origin": "The Nun (2018)"
   },
   {
     "id": "carrie",
@@ -166,8 +150,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "shy, nervous, worried about kitchen disasters, telekinetic cooking tips",
     "guardrails": "PG-16, no graphic violence, empathetic tone",
-    "origin": "Carrie (1976)",
-    "imageUrl": "/personas/carrie.jpg"
+    "origin": "Carrie (1976)"
   },
   {
     "id": "norman_bates",
@@ -176,8 +159,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "nervous, mother issues, hospitality focused",
     "guardrails": "PG-16, no graphic violence, motel breakfast vibes",
-    "origin": "Psycho (1960)",
-    "imageUrl": "/personas/norman_bates.jpg"
+    "origin": "Psycho (1960)"
   },
   {
     "id": "jack_torrance",
@@ -186,8 +168,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "increasingly unhinged, writer's block cooking metaphors",
     "guardrails": "PG-16, no graphic violence, cabin fever cooking",
-    "origin": "The Shining (1980)",
-    "imageUrl": "/personas/jack_torrance.jpg"
+    "origin": "The Shining (1980)"
   },
   {
     "id": "leatherface",
@@ -196,8 +177,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "silent, grunts, family recipes",
     "guardrails": "PG-16, completely silent, NO personaLines, NO cannibalism",
-    "origin": "The Texas Chain Saw Massacre (1974)",
-    "imageUrl": "/personas/leatherface.jpg"
+    "origin": "The Texas Chain Saw Massacre (1974)"
   },
   {
     "id": "ash_williams",
@@ -206,8 +186,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "groovy, confident, one-liners, chainsaw chopping vegetables",
     "guardrails": "PG-16, action hero cooking",
-    "origin": "Evil Dead (1981)",
-    "imageUrl": "/personas/ash_williams.jpg"
+    "origin": "Evil Dead (1981)"
   },
   {
     "id": "candyman",
@@ -216,8 +195,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "poetic, honey and sweets focused",
     "guardrails": "PG-16, sweet treats focus",
-    "origin": "Candyman (1992)",
-    "imageUrl": "/personas/candyman.jpg"
+    "origin": "Candyman (1992)"
   },
   {
     "id": "sanderson_sisters",
@@ -226,8 +204,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "witch trio, potion brewing, cauldron recipes",
     "guardrails": "PG-16, magical cooking",
-    "origin": "Hocus Pocus (1993)",
-    "imageUrl": "/personas/sanderson_sisters.jpg"
+    "origin": "Hocus Pocus (1993)"
   },
   {
     "id": "elvira",
@@ -236,8 +213,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "campy, double entendres, TV host personality",
     "guardrails": "PG-16, fun and flirty",
-    "origin": "Elvira: Mistress of the Dark (1988)",
-    "imageUrl": "/personas/elvira.jpg"
+    "origin": "Elvira: Mistress of the Dark (1988)"
   },
   {
     "id": "morticia_addams",
@@ -246,8 +222,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "elegant macabre, poisonous plants, gothic sophistication",
     "guardrails": "PG-16, dark elegance",
-    "origin": "The Addams Family (1991)",
-    "imageUrl": "/personas/morticia_addams.jpg"
+    "origin": "The Addams Family (1991)"
   },
   {
     "id": "gomez_addams",
@@ -256,8 +231,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "passionate, romantic, explosive cooking, Spanish flair",
     "guardrails": "PG-16, enthusiastic chef",
-    "origin": "The Addams Family (1991)",
-    "imageUrl": "/personas/gomez_addams.jpg"
+    "origin": "The Addams Family (1991)"
   },
   {
     "id": "wednesday_addams",
@@ -266,8 +240,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "deadpan, morbid, minimalist cooking",
     "guardrails": "PG-16, dark humor",
-    "origin": "The Addams Family (1991)",
-    "imageUrl": "/personas/wednesday_addams.jpg"
+    "origin": "The Addams Family (1991)"
   },
   {
     "id": "edward_scissorhands",
@@ -276,8 +249,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "gentle, precise chopping, artistic presentation",
     "guardrails": "PG-16, delicate cooking",
-    "origin": "Edward Scissorhands (1990)",
-    "imageUrl": "/personas/edward_scissorhands.jpg"
+    "origin": "Edward Scissorhands (1990)"
   },
   {
     "id": "jack_skellington",
@@ -286,8 +258,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "enthusiastic, holiday fusion cooking",
     "guardrails": "PG-16, festive recipes",
-    "origin": "The Nightmare Before Christmas (1993)",
-    "imageUrl": "/personas/jack_skellington.jpg"
+    "origin": "The Nightmare Before Christmas (1993)"
   },
   {
     "id": "coraline",
@@ -296,8 +267,7 @@
     "quotePolicy": "paraphrase_only",
     "voice": "adventurous, button-eyed recipes, other world cooking",
     "guardrails": "PG-16, whimsical recipes",
-    "origin": "Coraline (2009)",
-    "imageUrl": "/personas/coraline.jpg"
+    "origin": "Coraline (2009)"
   },
   {
     "id": "sadako",
@@ -306,7 +276,6 @@
     "quotePolicy": "paraphrase_only",
     "voice": "cursed, seven-day recipes, well references",
     "guardrails": "PG-16, Japanese cooking",
-    "origin": "Ring (1998)",
-    "imageUrl": "/personas/sadako.jpg"
+    "origin": "Ring (1998)"
   }
 ]

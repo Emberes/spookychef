@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
             displayName: persona.displayName,
             movieImdbUrl: persona.movieImdbUrl,
             origin: persona.origin,
+            imageUrl: persona.imageUrl,
           }
         })}\n\n`));
 
@@ -188,6 +189,7 @@ export async function POST(request: NextRequest) {
                 displayName: persona.displayName,
                 movieImdbUrl: persona.movieImdbUrl,
                 origin: persona.origin,
+                imageUrl: persona.imageUrl,
               }
             };
 

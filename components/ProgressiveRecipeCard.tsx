@@ -68,19 +68,28 @@ export default function ProgressiveRecipeCard({ persona, progress }: Progressive
         }`}
       >
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm text-muted-foreground mb-1">Recept från</h3>
-            <h2 className="text-2xl font-bold text-primary">{persona.displayName}</h2>
-            {persona.origin && (
-              <a 
-                href={persona.movieImdbUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-muted-foreground mt-1 italic hover:text-primary hover:underline transition-colors cursor-pointer inline-block"
-              >
-                {persona.origin}
-              </a>
+          <div className="flex items-center gap-4">
+            {persona.imageUrl && (
+              <img 
+                src={persona.imageUrl} 
+                alt={persona.displayName}
+                className="w-20 h-20 rounded-full object-cover border-2 border-primary/30"
+              />
             )}
+            <div>
+              <h3 className="text-sm text-muted-foreground mb-1">Recept från</h3>
+              <h2 className="text-2xl font-bold text-primary">{persona.displayName}</h2>
+              {persona.origin && (
+                <a 
+                  href={persona.movieImdbUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground mt-1 italic hover:text-primary hover:underline transition-colors cursor-pointer inline-block"
+                >
+                  {persona.origin}
+                </a>
+              )}
+            </div>
           </div>
           <a
             href={persona.movieImdbUrl}
