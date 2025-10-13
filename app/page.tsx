@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeCard from '@/components/RecipeCard';
-import ProgressiveRecipeCard from '@/components/ProgressiveRecipeCard';
+import RecipeLoadingSkeleton from '@/components/RecipeLoadingSkeleton';
 import { RecipeResponse } from '@/lib/schema';
 
 export default function Home() {
@@ -300,7 +300,7 @@ export default function Home() {
         )}
 
         {isLoading && persona && (
-          <ProgressiveRecipeCard
+          <RecipeLoadingSkeleton
             persona={persona}
             progress={progress}
           />

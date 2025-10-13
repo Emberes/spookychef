@@ -3,7 +3,7 @@
 import { Clock, ChefHat, Flame, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-interface ProgressiveRecipeCardProps {
+interface RecipeLoadingSkeletonProps {
   persona: {
     id: string;
     displayName: string;
@@ -26,7 +26,7 @@ const preparationSteps = [
   'förbereder mise en place...',
 ];
 
-export default function ProgressiveRecipeCard({ persona, progress }: ProgressiveRecipeCardProps) {
+export default function RecipeLoadingSkeleton({ persona, progress }: RecipeLoadingSkeletonProps) {
   const [showPersona, setShowPersona] = useState(false);
   const [showTitle, setShowTitle] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
