@@ -1,21 +1,16 @@
 # SpookyChef — Projekt README
 
-En Next.js-webbapp som föreslår **ett recept** utifrån vad du har hemma — presenterat av en slumpad **skräckfilms-inspirerad persona**. Fokus på **humor > gore**, **PG-16**, och **recept only** (även för "tysta" personas).
+En Next.js-webbapp som genererar **kompletta recept från scratch** baserat på dina ingredienser — presenterat av en slumpad **skräckfilms-inspirerad persona**. Fokus på **humor > gore**, **PG-16**, och AI-driven kreativitet.
 
 ## 🎃 Snabbstart
-
-⚠️ **Viktigt:** På vissa system installeras inte Tailwind CSS automatiskt. Se `INSTALLATION.md` för detaljerade instruktioner.
 
 ```bash
 # Installera beroenden
 npm install
 
-# Installera Tailwind CSS manuellt (om det behövs)
-npm install tailwindcss@3.4.1 postcss@8.4.35 autoprefixer@10.4.17 --force
-
-# Kopiera env-exempel och fyll i din Gemini API-nyckel
-cp .env.local.example .env.local
-# Redigera .env.local och lägg till:
+# Skapa .env och lägg till din Gemini API-nyckel
+cp .env.example .env
+# Redigera .env:
 # GEMINI_API_KEY=din_gemini_api_nyckel
 
 # Starta dev-server
@@ -24,16 +19,14 @@ npm run dev
 
 Öppna [http://localhost:3000](http://localhost:3000)
 
-**Problem med installation?** Se `INSTALLATION.md` för alternativa metoder.
-
 ## 📋 Stack
 
-- **Next.js 15** (TypeScript, App Router)
+- **Next.js 14** (TypeScript, App Router)
 - **Tailwind CSS** (Dark mode)
-- **Gemini AI** via `@google/generative-ai`
-- **Zod** för schema-validering
-- **Lucide React** för ikoner
-- In-memory data (JSON-filer i repo)
+- **Gemini AI** (2.5-flash-lite) - Receptgenerering med systemInstruction + responseSchema
+- **Pollinations.ai** - Bildgenerering
+- **Zod** - Schema-validering
+- **Lucide React** - Ikoner
 
 ## 🗂️ Projektstruktur
 
@@ -41,39 +34,46 @@ npm run dev
 spookychef/
 ├── app/
 │   ├── api/
-│   │   ├── search/route.ts       # Söker kandidat-recept
-│   │   └── generate/route.ts     # Genererar persona-recept
+│   │   └── generate/route.ts      # LLM-generering med streaming
 │   ├── layout.tsx
-│   ├── page.tsx                  # Huvudsida
+│   ├── page.tsx                   # Huvudsida
 │   └── globals.css
 ├── components/
-│   ├── RecipeForm.tsx            # Input-formulär
-│   └── RecipeCard.tsx            # Receptvisning
+│   ├── RecipeForm.tsx             # Input-formulär
+│   ├── RecipeCard.tsx             # Receptvisning
+│   └── RecipeLoadingSkeleton.tsx  # Loading state
 ├── lib/
-│   ├── schema.ts                 # Zod schemas
-│   ├── normalize.ts              # Ingrediens-normalisering
-│   ├── filters.ts                # Diet/allergi-filter
-│   └── utils.ts                  # Utility-funktioner
+│   ├── schema.ts                  # Zod schemas
+│   ├── normalize.ts               # Ingrediens-normalisering
+│   ├── filters.ts                 # Diet/allergi-filter
+│   └── utils.ts                   # Utility-funktioner
 ├── data/
-│   ├── recipes_seed.json         # Recept-korpus
-│   ├── ingredient_aliases.json   # Ingrediens-alias
-│   └── personas_pool.json        # Persona-metadata
-├── docs/                         # Projektdokumentation
-├── .env.local.example
+│   ├── ingredient_aliases.json    # Ingrediens-alias (17 viktiga)
+│   └── personas_pool_iconic.json  # 31 personas med IMDb-länkar
+├── docs/                          # Projektdokumentation
+│   ├── blueprint_spooky_chef_v_2_mvp_spec.md
+│   ├── plan.md
+│   ├── TODO-SpookyChef.md
+│   └── development-logs/          # Utvecklingslogg
+├── .env.example                   # Mall för environment variables
 ├── package.json
 └── README.project.md
 ```
 
 ## 🔑 Miljövariabler
 
-Skapa `.env.local` baserat på `.env.local.example`:
+Skapa `.env` baserat på `.env.example`:
 
+```bash
+cp .env.example .env
+```
+
+Lägg till din Gemini API-nyckel:
 ```
 GEMINI_API_KEY=din_gemini_api_nyckel_här
-IMAGE_API_KEY=valfritt_för_bildgenerering
 ```
 
-**Viktigt:** Checka aldrig in riktiga API-nycklar!
+**Viktigt:** `.env` är i .gitignore och committas aldrig!
 
 ## 🚀 Kommandon
 
@@ -88,62 +88,61 @@ npm run lint     # Kör ESLint
 
 ### Kärnflöde
 1. **Random persona per chatt** - Väljs slumpmässigt vid start
-2. **Ingrediens-input** - Användaren anger ingredienser, diet och allergier
-3. **Sökning** - Viktad Jaccard-matchning mot recept-korpus
-4. **LLM-generering** - Gemini skapar persona-anpassat recept
-5. **Validering** - Zod validerar JSON, diet/allergi-filter körs
-6. **UI** - Visa recept med IMDb-länk till persona
+2. **Ingrediens-input** - Användaren anger ingredienser, diet och allergier  
+3. **LLM-generering** - Gemini skapar komplett recept från scratch med streaming
+4. **Validering** - responseSchema + Zod + deterministiska diet/allergi-filter
+5. **Bildgenerering** - Pollinations.ai genererar matbild parallellt med recept
+6. **UI** - Visa recept med IMDb-länk, bild, och persona-info
 
-### Personas (12 st i poolen)
-- Ghostface, Pennywise, Freddy Krueger, Chucky
-- Michael Myers (tyst), Jason Voorhees (tyst)
-- Beetlejuice, Jigsaw
-- Hannibal Lecter, Sweeney Todd
-- Dracula, Frankenstein's Monster (public domain)
+### AI/LLM-implementationer
+- **systemInstruction** - Cachad system-kontext (~50% snabbare, 20-30% färre tokens)
+- **responseSchema** - Garanterad JSON-struktur (~100% valid output)
+- **Streaming** - Real-time chunks med progressbar och aktivitetsmeddelanden
+- **Tidig bildURL** - Skickas under streaming för parallell laddning (~2s snabbare)
+- **Post-AI validering** - Deterministiska filter korrigerar felaktiga dietTags
+- **Retry-logik** - Upp till 2 försök vid fel, markdown-sanitering som säkerhetsnät
+
+### Personas (31 st i poolen)
+- Klassiska: Ghostface, Pennywise, Freddy, Chucky, Michael Myers, Jason, etc.
+- Whimsical: Beetlejuice, Jack Skellington, Wednesday Addams, Coraline
+- Public domain: Dracula, Frankenstein's Monster
+- **Tysta personas** får trailer-style voiceovers istället för quotes
 
 ### Säkerhetsfunktioner
 - **PG-16 guardrails** - Ingen grafisk våld eller kroppsliga referenser
 - **Parodi/inspirerad ton** - Inga direkta citat (quotePolicy: paraphrase_only)
-- **Tysta personas** - Inga personaLines för Myers/Jason
-- **Diet/allergi-filter** - Blockerar otillåtna ingredienser
-- **Fallback** - Vid LLM-fel, visa baslinje-recept
+- **Diet/allergi-validering** - AI-output korrigeras mot faktiska ingredienser
+- **Markdown-sanitering** - Hanterar Gemini streaming edge cases
 
 ## 🧪 API-kontrakt
-
-### POST `/api/search`
-**Body:**
-```json
-{
-  "ingredients": ["pasta", "tomat", "vitlök"],
-  "diet": ["veg"],
-  "allergies": []
-}
-```
-
-**Response:**
-```json
-{
-  "candidate": { "id": "...", "title": "...", ... },
-  "candidatesTried": ["id1", "id2", "id3"]
-}
-```
 
 ### POST `/api/generate`
 **Body:**
 ```json
 {
-  "candidate": { "id": "...", ... },
+  "userIngredients": ["pasta", "tomat", "vitlök"],
   "chatId": "abc123",
   "diet": ["veg"],
   "allergies": []
 }
 ```
 
-**Response:**
+**Response:** Server-Sent Events (SSE) stream
+```
+data: {"persona": {"id": "ghostface", "displayName": "Ghostface", ...}}
+data: {"chunk": "{\"personaId\":"}
+data: {"chunk": "\"ghostface\",\"title\":\"..."}
+data: {"imageUrl": "https://image.pollinations.ai/..."}
+...
+data: {"done": true, "recipe": {...}}
+```
+
+**Färdigt recept:**
 ```json
 {
   "personaId": "ghostface",
   "title": "Meta-tomatpasta",
+  "imagePrompt": "Pasta dish with tomatoes...",
   "timeMinutes": 20,
   "difficulty": "lätt",
   "dietTags": ["veg"],
@@ -151,6 +150,7 @@ npm run lint     # Kör ESLint
   "ingredients": [...],
   "steps": [...],
   "personaLines": ["..."],
+  "imageUrl": "https://image.pollinations.ai/...",
   "persona": {
     "id": "ghostface",
     "displayName": "Ghostface",
@@ -162,10 +162,11 @@ npm run lint     # Kör ESLint
 ## 📚 Dokumentation
 
 Se `docs/` för detaljerad dokumentation:
-- `blueprint_spooky_chef_v_2_mvp_spec.md` - MVP-specifikation
-- `plan.md` - Gemini AI-implementation
+- `blueprint_spooky_chef_v_2_mvp_spec.md` - Original MVP-specifikation
+- `plan.md` - AI/LLM implementation plan
 - `TODO-SpookyChef.md` - Utvecklings-checklista
 - `reflektioner_kring_projektet_spooky_chef.md` - Design-reflektioner
+- `development-logs/` - Utvecklingslogg och changelogs
 
 ## 🔄 Deploy (Vercel)
 
@@ -176,32 +177,40 @@ Se `docs/` för detaljerad dokumentation:
 
 Vercel detekterar automatiskt Next.js och kör `npm run build`.
 
-## ✅ Uppfyllt från TODO
+## 🚀 Implementerat
 
-### MVP-krav
-- ✅ Next.js med TypeScript, Tailwind, App Router
-- ✅ Random persona per chatt (12 personas)
+### Kärnfunktioner
+- ✅ Next.js 14 med TypeScript, Tailwind, App Router
+- ✅ Random persona per chatt (31 personas)
 - ✅ Ingrediens-input med diet/allergi-val
-- ✅ `/api/search` - Viktad Jaccard-matchning
-- ✅ `/api/generate` - Gemini AI-integrering
-- ✅ Zod-validering med retry-logik
-- ✅ Deterministiskt diet/allergi-filter efter LLM
-- ✅ IMDb-länk i persona-header
+- ✅ Direkt LLM-generering (ingen RAG/embeddings - recept skapas från scratch)
+- ✅ Gemini AI med systemInstruction + responseSchema
+- ✅ Streaming med progressbar och dynamiska meddelanden
+- ✅ Automatisk bildgenerering med Pollinations.ai
+- ✅ IMDb-länkar i persona-cards
 - ✅ "Generera om" och "Kopiera recept"-funktioner
-- ✅ Dark theme med skelett-loading
-- ✅ Fullständig dokumentation
+- ✅ Dark theme med RecipeLoadingSkeleton
+- ✅ Fullständig dokumentation med detaljerade kommentarer
 
 ### Data
-- ✅ 1000 recept i seed-korpus (varierade kök, dietkrav, svårighetsgrader)
-- ✅ 53 ingrediens-alias
-- ✅ 55 personas (massiv variation från klassisk horror till whimsical)
+- ✅ 17 viktiga ingrediens-alias (optimerat från 88 - endast kritiska för allergi/diet)
+- ✅ 31 personas med profilbilder, IMDb-länkar, unique voices
 
-### Säkerhet & etik
-- ✅ PG-16 guardrails
+### AI/LLM Optimeringar
+- ✅ systemInstruction för caching (~50% snabbare)
+- ✅ responseSchema för garanterad JSON (~100% valid)
+- ✅ Streaming för progressiv UX
+- ✅ Tidig bildURL för parallell laddning (~2s snabbare)
+- ✅ Post-AI validering med deterministiska filter
+- ✅ Retry-logik med markdown-sanitering
+- ✅ Token-optimering (prompt utan onödig "none" text)
+
+### Säkerhet & Kvalitet
+- ✅ PG-16 guardrails i systemInstruction
 - ✅ Parodi/inspirerad ton (inga direkta citat)
-- ✅ Tysta personas (Myers, Jason) - inga personaLines
-- ✅ Strikt diet/allergi-kontroll
-- ✅ Fallback vid LLM-fel
+- ✅ Tysta personas får trailer voiceovers
+- ✅ Automatisk korrigering av felaktiga dietTags
+- ✅ Allergi/diet-filter som säkerhetsnät
 
 ## 🎯 Exempel-användning
 
