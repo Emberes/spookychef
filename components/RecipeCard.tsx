@@ -11,6 +11,7 @@ interface RecipeCardProps {
     displayName: string;
     movieImdbUrl: string;
     origin?: string;
+    imageUrl?: string;
   };
   onRegenerate?: () => void;
   onChangeChef?: () => void;

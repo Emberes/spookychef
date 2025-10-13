@@ -9,6 +9,7 @@ interface ProgressiveRecipeCardProps {
     displayName: string;
     movieImdbUrl: string;
     origin?: string;
+    imageUrl?: string;
   };
   progress: number;
 }

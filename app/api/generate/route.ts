@@ -1,10 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/generative-ai';
 import { GenerateRequestSchema, RecipeResponseSchema } from '@/lib/schema';
 import { containsAllergens, violatesDiet } from '@/lib/filters';
 import personasData from '@/data/personas_pool_iconic.json';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+// JSON Schema for response validation
+const recipeResponseSchema: ResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    personaId: { type: SchemaType.STRING },
+    title: { type: SchemaType.STRING },
+    imagePrompt: { type: SchemaType.STRING },
+    timeMinutes: { type: SchemaType.NUMBER },
+    difficulty: { type: SchemaType.STRING, format: "enum" as const, enum: ["lätt", "medel", "svår"] },
+    dietTags: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    nutrition: {
+      type: SchemaType.OBJECT,
+      properties: {
+        kcal: { type: SchemaType.NUMBER },
+        protein_g: { type: SchemaType.NUMBER }
+      },
+      required: ["kcal", "protein_g"]
+    },
+    ingredients: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          name: { type: SchemaType.STRING },
+          qty: { type: SchemaType.STRING },
+          unit: { type: SchemaType.STRING }
+        },
+        required: ["name", "qty", "unit"]
+      }
+    },
+    steps: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    personaLines: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING }, maxItems: 1 }
+  },
+  required: ["personaId", "title", "timeMinutes", "difficulty", "dietTags", "nutrition", "ingredients", "steps", "personaLines"]
+};
 
 // Store persona per chatId (in-memory for MVP)
 const chatPersonas = new Map<string, typeof personasData[0]>();
@@ -94,6 +130,8 @@ export async function POST(request: NextRequest) {
       model: 'gemini-2.5-flash-lite',
       generationConfig: {
         maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+        responseSchema: recipeResponseSchema,
       },
       systemInstruction: systemPrompt,
     });
@@ -113,125 +151,79 @@ export async function POST(request: NextRequest) {
           }
         })}\n\n`));
 
-        let attempts = 0;
-        const maxAttempts = 2;
-        let success = false;
+        const startTime = Date.now();
 
-        while (attempts < maxAttempts && !success) {
-          attempts++;
-          console.log(`🔄 Attempt ${attempts} starting...`);
-          const attemptStartTime = Date.now();
+        try {
+          console.log('📤 Sending request to Gemini API (streaming)...');
+          const result = await model.generateContentStream([
+            { text: userPrompt }
+          ]);
+          console.log(`⏱️  First response received after ${Date.now() - startTime}ms`);
 
-          try {
-            console.log('📤 Sending request to Gemini API (streaming)...');
-            const result = await model.generateContentStream([
-              { text: userPrompt + (attempts > 1 ? '\n\nIMPORTANT: Return ONLY valid JSON, no markdown or extra text!' : '') }
-            ]);
-            console.log(`⏱️  First response received after ${Date.now() - attemptStartTime}ms`);
+          let fullText = '';
+          let chunkCount = 0;
 
-            let fullText = '';
-            let chunkCount = 0;
-
-            // Stream chunks as they arrive
-            for await (const chunk of result.stream) {
-              chunkCount++;
-              if (chunkCount === 1) {
-                console.log(`📦 First chunk received after ${Date.now() - attemptStartTime}ms`);
-              }
-              const chunkText = chunk.text();
-              fullText += chunkText;
-
-              // Send chunk to client
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: chunkText })}\n\n`));
+          // Stream chunks as they arrive
+          for await (const chunk of result.stream) {
+            chunkCount++;
+            if (chunkCount === 1) {
+              console.log(`📦 First chunk received after ${Date.now() - startTime}ms`);
             }
+            const chunkText = chunk.text();
+            fullText += chunkText;
 
-            // Clean up potential markdown formatting
-            fullText = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-            // Validate the complete response
-            const recipeData = JSON.parse(fullText);
-            const validatedRecipe = RecipeResponseSchema.parse(recipeData);
-
-            // Debug logging
-            console.log('✅ Recipe validated');
-            console.log('Steps count:', validatedRecipe.steps?.length || 0);
-            if (validatedRecipe.steps?.length > 0) {
-              console.log('First step:', validatedRecipe.steps[0].substring(0, 50) + '...');
-            }
-            console.log(`⏱️  Total attempt time: ${Date.now() - attemptStartTime}ms`);
-
-            // Post-validation: check diet and allergen compliance
-            const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
-
-            if (diet.length > 0 && violatesDiet(recipeIngredients, diet)) {
-              console.warn('Recipe violates diet constraints, retrying...');
-              throw new Error('Diet violation');
-            }
-
-            if (allergies.length > 0 && containsAllergens(recipeIngredients, allergies)) {
-              console.warn('Recipe contains allergens, retrying...');
-              throw new Error('Allergen violation');
-            }
-
-            // Generate image URL using Pollinations.ai
-            const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
-            const basePrompt = validatedRecipe.imagePrompt || `A plate of ${validatedRecipe.title}`;
-            const imagePrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=432&nologo=true&enhance=true`;
-            console.log('🖼️  Generated image URL');
-
-            // Success! Send final complete recipe
-            const response = {
-              ...validatedRecipe,
-              imageUrl,
-              persona: {
-                id: persona.id,
-                displayName: persona.displayName,
-                movieImdbUrl: persona.movieImdbUrl,
-                origin: persona.origin,
-                imageUrl: persona.imageUrl,
-              }
-            };
-
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: response })}\n\n`));
-            success = true;
-
-          } catch (parseError) {
-            console.error(`Attempt ${attempts} failed:`, parseError);
-
-            if (attempts >= maxAttempts) {
-              // Fallback: return simple recipe
-              console.log('Using fallback recipe');
-              const fallbackResponse = {
-                personaId: persona.id,
-                title: `${persona.displayName}s hemliga recept`,
-                timeMinutes: 30,
-                difficulty: 'medel' as const,
-                dietTags: diet,
-                nutrition: { kcal: 400, protein_g: 15 },
-                ingredients: userIngredients.map((name, idx) => ({
-                  name,
-                  qty: idx === 0 ? 250 : 1,
-                  unit: idx === 0 ? 'g' : 'st',
-                })),
-                steps: [
-                  'Förbered alla ingredienser.',
-                  'Kombinera ingredienserna enligt din smak.',
-                  'Smaka av och servera.',
-                ],
-                personaLines: [],
-                persona: {
-                  id: persona.id,
-                  displayName: persona.displayName,
-                  movieImdbUrl: persona.movieImdbUrl,
-                  origin: persona.origin,
-                }
-              };
-
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: fallbackResponse })}\n\n`));
-              success = true;
-            }
+            // Send chunk to client
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: chunkText })}\n\n`));
           }
+
+          // Parse and validate the complete response
+          const recipeData = JSON.parse(fullText);
+          const validatedRecipe = RecipeResponseSchema.parse(recipeData);
+
+          // Debug logging
+          console.log('✅ Recipe validated');
+          console.log('Steps count:', validatedRecipe.steps?.length || 0);
+          if (validatedRecipe.steps?.length > 0) {
+            console.log('First step:', validatedRecipe.steps[0].substring(0, 50) + '...');
+          }
+          console.log(`⏱️  Total time: ${Date.now() - startTime}ms`);
+
+          // Post-validation: check diet and allergen compliance
+          const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
+
+          if (diet.length > 0 && violatesDiet(recipeIngredients, diet)) {
+            console.warn('⚠️  Recipe violates diet constraints');
+          }
+
+          if (allergies.length > 0 && containsAllergens(recipeIngredients, allergies)) {
+            console.warn('⚠️  Recipe contains allergens');
+          }
+
+          // Generate image URL using Pollinations.ai
+          const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
+          const basePrompt = validatedRecipe.imagePrompt || `A plate of ${validatedRecipe.title}`;
+          const imagePrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
+          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=432&nologo=true&enhance=true`;
+          console.log('🖼️  Generated image URL');
+
+          // Success! Send final complete recipe
+          const response = {
+            ...validatedRecipe,
+            imageUrl,
+            persona: {
+              id: persona.id,
+              displayName: persona.displayName,
+              movieImdbUrl: persona.movieImdbUrl,
+              origin: persona.origin,
+              imageUrl: persona.imageUrl,
+            }
+          };
+
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: response })}\n\n`));
+
+        } catch (error) {
+          console.error('Generation failed:', error);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Failed to generate recipe' })}\n\n`));
         }
 
         controller.close();
