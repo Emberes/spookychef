@@ -76,6 +76,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Show persona immediately
@@ -167,6 +171,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Update persona if it changed
@@ -192,7 +200,7 @@ export default function Home() {
     } catch (err) {
       console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong');
-      setIsLoading(false);
+      setIsLoading.setState(false);
       setProgress(0);
     }
   };
@@ -249,6 +257,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Show new persona immediately
