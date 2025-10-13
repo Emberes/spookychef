@@ -265,6 +265,24 @@ export async function POST(request: NextRequest) {
               console.warn('⚠️  Recipe contains allergens');
             }
 
+            // NOTE: Korrigera dietTags baserat på faktiska ingredienser
+            // Gemini kan felaktigt märka recept som "vegetarisk" trots kött, så vi validerar här
+            const correctedDietTags = validatedRecipe.dietTags.filter(tag => {
+              const tagLower = tag.toLowerCase();
+              if ((tagLower === 'veg' || tagLower === 'vegetarisk' || tagLower === 'vegetarian') && violatesDiet(recipeIngredients, ['veg'])) {
+                console.warn(`⚠️  Removed incorrect diet tag: ${tag} (recipe contains meat)`);
+                return false;
+              }
+              if (tagLower === 'vegan' && violatesDiet(recipeIngredients, ['vegan'])) {
+                console.warn(`⚠️  Removed incorrect diet tag: ${tag} (recipe contains animal products)`);
+                return false;
+              }
+              return true;
+            });
+
+            // Update validated recipe with corrected tags
+            validatedRecipe.dietTags = correctedDietTags;
+
             // Generate image URL using Pollinations.ai
             const imageUrl = buildRecipeImageUrl(validatedRecipe.title, validatedRecipe.imagePrompt, persona);
             console.log('🖼️  Generated image URL');
