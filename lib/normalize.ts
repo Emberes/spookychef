@@ -10,25 +10,3 @@ export function normalizeIngredient(ingredient: string): string {
   const aliasMap: Record<string, string> = ingredientAliases;
   return aliasMap[normalized] || normalized;
 }
-
-/**
- * Normalize array of ingredients
- */
-export function normalizeIngredients(ingredients: string[]): string[] {
-  return ingredients.map(normalizeIngredient);
-}
-
-/**
- * Calculate weighted Jaccard similarity between two ingredient sets
- */
-export function weightedJaccard(userIngredients: string[], recipeIngredients: string[]): number {
-  const userSet = new Set(userIngredients.map(normalizeIngredient));
-  const recipeSet = new Set(recipeIngredients.map(normalizeIngredient));
-  
-  const intersection = new Set(Array.from(userSet).filter(x => recipeSet.has(x)));
-  const union = new Set([...Array.from(userSet), ...Array.from(recipeSet)]);
-  
-  if (union.size === 0) return 0;
-  
-  return intersection.size / union.size;
-}

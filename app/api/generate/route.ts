@@ -151,79 +151,109 @@ export async function POST(request: NextRequest) {
           }
         })}\n\n`));
 
-        const startTime = Date.now();
+        // NOTE: Retry-logik för robust hantering av Gemini API edge cases
+        // Trots att vi använder responseSchema kan Gemini under streaming ibland:
+        // 1. Returnera JSON omsluten i markdown (```json...```)
+        // 2. Generera ogiltig JSON-struktur (sällsynt)
+        // 3. Få tillfälliga API-problem
+        // Vi gör därför upp till 2 försök. Markdown rensas bort som säkerhetsnät,
+        // och vid misslyckande görs ett nytt API-anrop automatiskt.
+        let attempts = 0;
+        const maxAttempts = 2;
 
-        try {
-          console.log('📤 Sending request to Gemini API (streaming)...');
-          const result = await model.generateContentStream([
-            { text: userPrompt }
-          ]);
-          console.log(`⏱️  First response received after ${Date.now() - startTime}ms`);
+        while (attempts < maxAttempts) {
+          attempts++;
+          const startTime = Date.now();
 
-          let fullText = '';
-          let chunkCount = 0;
+          try {
+            console.log(`🔄 Attempt ${attempts}/${maxAttempts}...`);
+            console.log('📤 Sending request to Gemini API (streaming)...');
+            const result = await model.generateContentStream([
+              { text: userPrompt }
+            ]);
+            console.log(`⏱️  First response received after ${Date.now() - startTime}ms`);
 
-          // Stream chunks as they arrive
-          for await (const chunk of result.stream) {
-            chunkCount++;
-            if (chunkCount === 1) {
-              console.log(`📦 First chunk received after ${Date.now() - startTime}ms`);
+            let fullText = '';
+            let chunkCount = 0;
+
+            // Stream chunks as they arrive
+            for await (const chunk of result.stream) {
+              chunkCount++;
+              if (chunkCount === 1) {
+                console.log(`📦 First chunk received after ${Date.now() - startTime}ms`);
+              }
+              const chunkText = chunk.text();
+              fullText += chunkText;
+
+              // Send chunk to client
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: chunkText })}\n\n`));
             }
-            const chunkText = chunk.text();
-            fullText += chunkText;
 
-            // Send chunk to client
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: chunkText })}\n\n`));
-          }
+            // NOTE: Markdown-rensning som säkerhetsnät
+            // responseSchema + responseMimeType: "application/json" SKA garantera ren JSON,
+            // men under streaming kan markdown ibland läcka igenom (känd Gemini-bugg).
+            // Vi rensar därför bort eventuella ```json och ``` markers innan parsing.
+            fullText = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-          // Parse and validate the complete response
-          const recipeData = JSON.parse(fullText);
-          const validatedRecipe = RecipeResponseSchema.parse(recipeData);
+            // Parse and validate the complete response
+            const recipeData = JSON.parse(fullText);
+            const validatedRecipe = RecipeResponseSchema.parse(recipeData);
 
-          // Debug logging
-          console.log('✅ Recipe validated');
-          console.log('Steps count:', validatedRecipe.steps?.length || 0);
-          if (validatedRecipe.steps?.length > 0) {
-            console.log('First step:', validatedRecipe.steps[0].substring(0, 50) + '...');
-          }
-          console.log(`⏱️  Total time: ${Date.now() - startTime}ms`);
-
-          // Post-validation: check diet and allergen compliance
-          const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
-
-          if (diet.length > 0 && violatesDiet(recipeIngredients, diet)) {
-            console.warn('⚠️  Recipe violates diet constraints');
-          }
-
-          if (allergies.length > 0 && containsAllergens(recipeIngredients, allergies)) {
-            console.warn('⚠️  Recipe contains allergens');
-          }
-
-          // Generate image URL using Pollinations.ai
-          const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
-          const basePrompt = validatedRecipe.imagePrompt || `A plate of ${validatedRecipe.title}`;
-          const imagePrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
-          const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=432&nologo=true&enhance=true`;
-          console.log('🖼️  Generated image URL');
-
-          // Success! Send final complete recipe
-          const response = {
-            ...validatedRecipe,
-            imageUrl,
-            persona: {
-              id: persona.id,
-              displayName: persona.displayName,
-              movieImdbUrl: persona.movieImdbUrl,
-              origin: persona.origin,
-              imageUrl: persona.imageUrl,
+            // Debug logging
+            console.log('✅ Recipe validated');
+            console.log('Steps count:', validatedRecipe.steps?.length || 0);
+            if (validatedRecipe.steps?.length > 0) {
+              console.log('First step:', validatedRecipe.steps[0].substring(0, 50) + '...');
             }
-          };
+            console.log(`⏱️  Total time: ${Date.now() - startTime}ms`);
 
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: response })}\n\n`));
+            // Post-validation: check diet and allergen compliance
+            const recipeIngredients = validatedRecipe.ingredients.map(i => i.name);
 
-        } catch (error) {
-          console.error('Generation failed:', error);
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Failed to generate recipe' })}\n\n`));
+            if (diet.length > 0 && violatesDiet(recipeIngredients, diet)) {
+              console.warn('⚠️  Recipe violates diet constraints');
+            }
+
+            if (allergies.length > 0 && containsAllergens(recipeIngredients, allergies)) {
+              console.warn('⚠️  Recipe contains allergens');
+            }
+
+            // Generate image URL using Pollinations.ai
+            const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
+            const basePrompt = validatedRecipe.imagePrompt || `A plate of ${validatedRecipe.title}`;
+            const imagePrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=768&height=432&nologo=true&enhance=true`;
+            console.log('🖼️  Generated image URL');
+
+            // Success! Send final complete recipe
+            const response = {
+              ...validatedRecipe,
+              imageUrl,
+              persona: {
+                id: persona.id,
+                displayName: persona.displayName,
+                movieImdbUrl: persona.movieImdbUrl,
+                origin: persona.origin,
+                imageUrl: persona.imageUrl,
+              }
+            };
+
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, recipe: response })}\n\n`));
+            
+            // Success - break out of retry loop
+            break;
+
+          } catch (error) {
+            console.error(`❌ Attempt ${attempts} failed:`, error);
+            
+            if (attempts >= maxAttempts) {
+              // Final failure - send error to client
+              console.error('💥 All attempts failed');
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Failed to generate recipe after multiple attempts' })}\n\n`));
+            } else {
+              console.log('🔄 Retrying...');
+            }
+          }
         }
 
         controller.close();
