@@ -10,6 +10,10 @@ Projektet är byggt **“AI-first”**: vi har använt **GitHub Copilot CLI** f�
 
 Vi använder ingen **RAG/embeddings** i denna version, eftersom vi vill generera nya recept på förfrågan utifrån användarens aktuella ingredienser (i stället för att återanvända förlagor). Bildgenerering kompletteras via **Pollinations.AI.**
 
+## 🧠 Projektreflektioner (Godkänt)
+
+Vi identifierade **Google Gemini API** (2.5-flash-lite) som ny teknik för teamet och använde det för att generera recept on-the-fly utifrån användarens ingredienser, diet och allergier — i en PG-16, parodi-/inspirerad persona-stil. Implementationen bygger på systemInstruction + responseSchema för strikt JSON, Zod-validering (med 1 retry + fallback) och streaming, så svaret kan renderas direkt och säkert; vi kör även ett efterfilter som stoppar allergener. Som komplement använder vi Pollinations.AI för att generera matbilder från en prompt som konstrueras av det slutliga receptet.
+
 ## 🎃 Snabbstart
 
 ```bash
