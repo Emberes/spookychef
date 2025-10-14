@@ -20,6 +20,12 @@ Vi identifierade **Google Gemini API** (2.5-flash-lite) som ny teknik för teame
 
 Vi valde **Google Gemini API (2.5-flash-lite)** för **snabb och kostnadseffektiv** LLM-generering med **bra stöd för strukturerad utdata** (systemInstruction + responseSchema) och **streaming** som passar vår realtids-UX. Med **tydliga regler i prompten** (PG-16, parodi/inspirerad ton, inga direkta citat, _endast recept_) tillsammans med **Zod-validering** och en **efterkontroll för allergener** får vi stabila JSON-svar. Vi avstod **RAG/embeddings** eftersom vi vill **skapa nya recept on-the-fly** utifrån användarens aktuella ingredienser. För bilder valde vi **Pollinations.AI** eftersom det är enkelt att integrera **utan API-nyckel** och kan bytas ut fristående från LLM-flödet.
 
+### Varför behövdes AI-komponenten? Kunde det lösts utan AI?
+
+AI:n behövdes för att **skapa nya, kompletta recept i realtid** med rimliga mängder, tider, steg och **persona-anpassad ton** utifrån fria ingredienslistor och valda dieter/allergier. Det ger variation, naturligt språk och humor som är svår att nå med hårdkodade regler.
+
+Utan AI hade vi behövt ett **stort, manuellt kuraterat receptlager**, avancerad sök/regel-logik (synonymer, substitutioner, matchningsnivåer) och **textmallar** som fylls i automatiskt, vilket blir **stelare, mer underhållstungt och mindre dynamiskt** jämfört med en LLM.
+
 ## 🎃 Snabbstart
 
 ```bash
