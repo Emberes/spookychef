@@ -2,6 +2,14 @@
 
 En Next.js-webbapp som genererar **kompletta recept från scratch** baserat på dina ingredienser — presenterat av en slumpad **skräckfilms-inspirerad persona**. Fokus på **humor > gore**, **PG-16**, och AI-driven kreativitet.
 
+## ⚙️ Projektöversikt
+
+Vår app använder **Google Gemini API** som **LLM** för att generera kompletta recept i strikt JSON, i en PG-16, parodi-/inspirerad persona-stil.
+
+Projektet är byggt **“AI-first”**: vi har använt **GitHub Copilot CLI** för koden, ChatGPT för planering och struktur (inkl. promptdesign) och **Gemini API** för själva receptgenereringen, med målet att minimera handskriven kod.
+
+Vi använder ingen **RAG/embeddings** i denna version, eftersom vi vill generera nya recept på förfrågan utifrån användarens aktuella ingredienser (i stället för att återanvända förlagor). Bildgenerering kompletteras via **Pollinations.AI.**
+
 ## 🎃 Snabbstart
 
 ```bash
