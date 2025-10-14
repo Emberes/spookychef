@@ -24,6 +24,16 @@ Vi valde **Google Gemini API** för **snabb och kostnadseffektiv** generering me
 
 AI behövdes för att **skapa nya, kompletta recept i realtid** med rimliga mängder, tider, steg och **persona-anpassad ton** från fria ingredienslistor och valda dieter/allergier—något som är svårt att nå med hårdkodade regler. Utan AI hade vi behövt ett **stort, manuellt kuraterat receptlager**, avancerad sök/regel-logik (synonymer, substitutioner, matchningsnivåer) och **textmallar** som fylls i automatiskt, vilket blir **stelare, mer underhållstungt och mindre dynamiskt**.
 
+## 🏅 Projektreflektioner (Väl Godkänt)
+
+### 1) Tillämpning av AI-komponenten
+
+Vi använder Google Gemini API med ett flöde som ger strikt JSON via responseSchema, validerar med Zod och strömmar svaret för en följsam realtidsupplevelse. Vid behov hanteras fel med en enkel retry och Markdown-sanitering, och under genereringen skickas en tidig bild-URL så att Pollinations.ai-bilden kan laddas parallellt. Efter AI-svaret kör vi deterministiska diet- och allergifilter och justerar felaktiga dietTags, samtidigt som vi håller oss till PG-16 och en parodi-/inspirerad persona-stil utan direkta citat. Sammantaget visar detta att vi inte bara anropar en LLM, utan applicerar den kontrollerat och robust.
+
+### 2) Avgörande om varför AI är lämpligt
+
+Vi har medvetet valt bort RAG/embeddings eftersom målet är att skapa nya recept on-the-fly utifrån användarens aktuella ingredienser, snarare än att återanvända förlagor. Direkt generering med Gemini passar projektets kreativa och persona-drivna mål, förenklar arkitekturen och gör MVP:n snabbare att bygga och iterera på. Detta visar ett moget omdöme kring när AI är rätt verktyg och hur det ska tillämpas i just den här kontexten.
+
 ## 🎃 Snabbstart
 
 ```bash
