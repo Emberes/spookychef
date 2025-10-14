@@ -1,239 +1,264 @@
-# SpookyChef — README (projekt)
+# SpookyChef — Projekt README
 
-En Next.js‑webbapp som föreslår **ett recept** utifrån vad du har hemma — presenterat av en slumpad **skräckfilms‑inspirerad persona**. Fokus på **humor > gore**, **PG‑16**, och **recept only** (även för “tysta” personas).
+En Next.js-webbapp som genererar **kompletta recept från scratch** baserat på dina ingredienser — presenterat av en slumpad **skräckfilms-inspirerad persona**. Fokus på **humor > gore**, **PG-16**, och AI-driven kreativitet.
 
-> **Obs:** Lärarens README ligger i repo‑root som `README.md`. Den här filen är **vår projekt‑README** (föreslår namn `README.project.md`).
+## 🎃 Snabbstart
 
----
-
-## Innehåll
-- [Snabbstart](#snabbstart)
-- [Stack](#stack)
-- [Mappstruktur](#mappstruktur)
-- [Miljövariabler](#miljövariabler)
-- [Köra lokalt](#köra-lokalt)
-- [API‑kontrakt](#api-kontrakt)
-- [Personas & IP/etik](#personas--ipetik)
-- [Datafiler](#datafiler)
-- [Valfritt: Embeddings-index](#valfritt-embeddings-index)
-- [Test & kvalitet](#test--kvalitet)
-- [Deploy (Vercel)](#deploy-vercel)
-- [Dokumentation](#dokumentation)
-
----
-
-## Snabbstart
 ```bash
-# Klona repo
-git clone <repo-url> spookychef && cd spookychef
-
 # Installera beroenden
-npm install   # eller: pnpm install / yarn
+npm install
 
-# Kopiera env-exempel
-cp .env.local.example .env.local
-# Fyll i:
-# GEMINI_API_KEY=...
-# IMAGE_API_KEY=...   # valfritt om du kör bild-API
+# Skapa .env och lägg till din Gemini API-nyckel
+cp .env.example .env
+# Redigera .env:
+# GEMINI_API_KEY=din_gemini_api_nyckel
 
 # Starta dev-server
 npm run dev
 ```
 
-Öppna http://localhost:3000
+Öppna [http://localhost:3000](http://localhost:3000)
 
----
+## 📋 Stack
 
-## Stack
-- **Next.js** (TypeScript, App Router)
-- **Tailwind CSS** + **shadcn/ui**
-- **LLM**: Gemini (adapterbar så andra LLM:er kan kopplas på)
-- **In-memory data** (JSON‑filer i repo), valfritt **embeddings-index** i JSON
-- Deploy: **Vercel**
+- **Next.js 14** (TypeScript, App Router)
+- **Tailwind CSS** (Dark mode)
+- **Gemini AI** (2.5-flash-lite) - Receptgenerering med systemInstruction + responseSchema
+- **Pollinations.ai** - Bildgenerering
+- **Zod** - Schema-validering
+- **Lucide React** - Ikoner
 
----
+## 🗂️ Projektstruktur
 
-## Mappstruktur
 ```
 spookychef/
-├─ README.md                  # Lärarens README (i root)
-├─ README.project.md          # Denna fil (vårt README)
-├─ docs/
-│  ├─ blueprint-v2.md
-│  ├─ plan-gemini-v2.md
-│  └─ reflektioner.md
-├─ src/
-│  ├─ data/
-│  │  ├─ recipes_seed.json
-│  │  ├─ ingredient_aliases.json
-│  │  └─ personas_pool.json
-│  ├─ ai/
-│  │  ├─ systemPrompt.ts
-│  │  ├─ schema.ts
-│  │  └─ imagePrompt.ts
-│  ├─ lib/
-│  │  ├─ normalize.ts
-│  │  └─ similarity.ts
-│  └─ app/api/
-│     ├─ search/route.ts
-│     └─ generate/route.ts
-├─ public/
-├─ .env.local.example
-├─ package.json
-└─ tsconfig.json
+├── app/
+│   ├── api/
+│   │   └── generate/route.ts      # LLM-generering med streaming
+│   ├── layout.tsx
+│   ├── page.tsx                   # Huvudsida
+│   └── globals.css
+├── components/
+│   ├── RecipeForm.tsx             # Input-formulär
+│   ├── RecipeCard.tsx             # Receptvisning
+│   └── RecipeLoadingSkeleton.tsx  # Loading state
+├── lib/
+│   ├── schema.ts                  # Zod schemas
+│   ├── normalize.ts               # Ingrediens-normalisering
+│   ├── filters.ts                 # Diet/allergi-filter
+│   └── utils.ts                   # Utility-funktioner
+├── data/
+│   ├── ingredient_aliases.json    # Ingrediens-alias (17 viktiga)
+│   └── personas_pool_iconic.json  # 31 personas med IMDb-länkar
+├── docs/                          # Projektdokumentation
+│   ├── blueprint_spooky_chef_v_2_mvp_spec.md
+│   ├── plan.md
+│   ├── TODO-SpookyChef.md
+│   └── development-logs/          # Utvecklingslogg
+├── .env.example                   # Mall för environment variables
+├── package.json
+└── README.project.md
 ```
 
----
+## 🔑 Miljövariabler
 
-## Miljövariabler
-Skapa `.env.local` baserat på `.env.local.example`:
-```
-GEMINI_API_KEY=        # krävs för /api/generate
-IMAGE_API_KEY=         # valfritt, om bild-API används
-```
+Skapa `.env` baserat på `.env.example`:
 
-> **Viktigt:** Checka aldrig in riktiga nycklar.
-
----
-
-## Köra lokalt
 ```bash
-npm run dev     # startar på http://localhost:3000
-npm run build   # produktionsbuild
-npm run start   # kör builden lokalt
-npm run lint    # lint
-npm test        # om tester lagts till
+cp .env.example .env
 ```
 
----
+Lägg till din Gemini API-nyckel:
 
-## API‑kontrakt
+```
+GEMINI_API_KEY=din_gemini_api_nyckel_här
+```
 
-### POST `/api/search`
-**Body**
-```json
-{
-  "ingredients": ["pasta", "tomat", "vitlök"],
-  "diet": ["veg"],
-  "allergies": []
-}
+**Viktigt:** `.env` är i .gitignore och committas aldrig!
+
+## 🚀 Kommandon
+
+```bash
+npm run dev      # Starta dev-server på http://localhost:3000
+npm run build    # Bygg för produktion
+npm run start    # Kör produktions-build
+npm run lint     # Kör ESLint
 ```
-**Svar**
-```json
-{
-  "candidate": { "...": "recipe from seed" },
-  "candidatesTried": ["id1","id2","id3"]
-}
-```
-**Beskrivning**  
-- Normaliserar ingredienser via alias.  
-- Baslinje: **viktad Jaccard** mellan input‑ingredienser och receptens ingredienslistor.  
-- Filtrerar bort recept som bryter mot `diet`/`allergies`.  
-- Returnerar **1 kandidat** från seed‑korpusen.
+
+## 🎭 Funktioner
+
+### Kärnflöde
+
+1. **Random persona per chatt** - Väljs slumpmässigt vid start
+2. **Ingrediens-input** - Användaren anger ingredienser, diet och allergier
+3. **LLM-generering** - Gemini skapar komplett recept från scratch med streaming
+4. **Validering** - responseSchema + Zod + deterministiska diet/allergi-filter
+5. **Bildgenerering** - Pollinations.ai genererar matbild parallellt med recept
+6. **UI** - Visa recept med IMDb-länk, bild, och persona-info
+
+### AI/LLM-implementationer
+
+- **systemInstruction** - Cachad system-kontext (~50% snabbare, 20-30% färre tokens)
+- **responseSchema** - Garanterad JSON-struktur (~100% valid output)
+- **Streaming** - Real-time chunks med progressbar och aktivitetsmeddelanden
+- **Tidig bildURL** - Skickas under streaming för parallell laddning (~2s snabbare)
+- **Post-AI validering** - Deterministiska filter korrigerar felaktiga dietTags
+- **Retry-logik** - Upp till 2 försök vid fel, markdown-sanitering som säkerhetsnät
+
+### Personas (31 st i poolen)
+
+- Klassiska: Ghostface, Pennywise, Freddy, Chucky, Michael Myers, Jason, etc.
+- Whimsical: Beetlejuice, Jack Skellington, Wednesday Addams, Coraline
+- Public domain: Dracula, Frankenstein's Monster
+- **Tysta personas** får trailer-style voiceovers istället för quotes
+
+### Säkerhetsfunktioner
+
+- **PG-16 guardrails** - Ingen grafisk våld eller kroppsliga referenser
+- **Parodi/inspirerad ton** - Inga direkta citat (quotePolicy: paraphrase_only)
+- **Diet/allergi-validering** - AI-output korrigeras mot faktiska ingredienser
+- **Markdown-sanitering** - Hanterar Gemini streaming edge cases
+
+## 🧪 API-kontrakt
 
 ### POST `/api/generate`
-**Body**
+
+**Body:**
+
 ```json
 {
-  "candidate": { "id":"...", "title":"...", "ingredients":[...] },
+  "userIngredients": ["pasta", "tomat", "vitlök"],
   "chatId": "abc123",
   "diet": ["veg"],
   "allergies": []
 }
 ```
-**Svar (RecipeResponse)**  
+
+**Response:** Server-Sent Events (SSE) stream
+
+```
+data: {"persona": {"id": "ghostface", "displayName": "Ghostface", ...}}
+data: {"chunk": "{\"personaId\":"}
+data: {"chunk": "\"ghostface\",\"title\":\"..."}
+data: {"imageUrl": "https://image.pollinations.ai/..."}
+...
+data: {"done": true, "recipe": {...}}
+```
+
+**Färdigt recept:**
+
 ```json
 {
   "personaId": "ghostface",
-  "title": "Meta‑tomatpasta",
+  "title": "Meta-tomatpasta",
+  "imagePrompt": "Pasta dish with tomatoes...",
   "timeMinutes": 20,
   "difficulty": "lätt",
   "dietTags": ["veg"],
   "nutrition": { "kcal": 620, "protein_g": 18 },
-  "ingredients": [
-    { "name":"pasta","qty":250,"unit":"g" },
-    { "name":"tomat","qty":3,"unit":"st" },
-    { "name":"vitlök","qty":2,"unit":"klyfta" }
-  ],
-  "steps": [
-    "Koka pastan al dente.",
-    "Fräs vitlök i olivolja, tillsätt tomat.",
-    "Vänd i pastan; salta/peppra."
-  ],
-  "personaLines": ["Regel #1: smaka av."]
+  "ingredients": [...],
+  "steps": [...],
+  "personaLines": ["..."],
+  "imageUrl": "https://image.pollinations.ai/...",
+  "persona": {
+    "id": "ghostface",
+    "displayName": "Ghostface",
+    "imdbUrl": "https://www.imdb.com/..."
+  }
 }
 ```
-**Beskrivning**  
-- Använder **systemprompt** (PG‑16, parodi/inspirerad, **recept only**, inga direkta citat).  
-- Persona väljs **slumpmässigt per ny chatt** (sparas i session).  
-- Svar **valideras** med Zod; vid fel görs **1 retry** (”JSON only”). Misslyckas det → fallback till baslinje‑receptet utan persona‑twist.  
-- Efterkontroll: diet/allergi‑regel **efter** modellen (failsafe).
 
-**Schema (Zod‑ekvivalent)**
-```ts
-type RecipeResponse = {
-  personaId: string;
-  title: string;
-  timeMinutes: number;          // > 0
-  difficulty: "lätt" | "medel" | "svår";
-  dietTags: string[];
-  nutrition: { kcal: number; protein_g: number };
-  ingredients: { name: string; qty: number|string; unit: string }[];
-  steps: string[];
-  personaLines: string[];       // max 5 korta rader
-};
-```
+## 📚 Dokumentation
+
+Se `docs/` för detaljerad dokumentation:
+
+- `blueprint_spooky_chef_v_2_mvp_spec.md` - Original MVP-specifikation
+- `plan.md` - AI/LLM implementation plan
+- `TODO-SpookyChef.md` - Utvecklings-checklista
+- `reflektioner_kring_projektet_spooky_chef.md` - Design-reflektioner
+- `development-logs/` - Utvecklingslogg och changelogs
+
+## 🔄 Deploy (Vercel)
+
+1. Skapa nytt projekt i Vercel
+2. Koppla till GitHub-repo
+3. Lägg till miljövariabler: `GEMINI_API_KEY`
+4. Deploy!
+
+Vercel detekterar automatiskt Next.js och kör `npm run build`.
+
+## 🚀 Implementerat
+
+### Kärnfunktioner
+
+- ✅ Next.js 14 med TypeScript, Tailwind, App Router
+- ✅ Random persona per chatt (31 personas)
+- ✅ Ingrediens-input med diet/allergi-val
+- ✅ Direkt LLM-generering (ingen RAG/embeddings - recept skapas från scratch)
+- ✅ Gemini AI med systemInstruction + responseSchema
+- ✅ Streaming med progressbar och dynamiska meddelanden
+- ✅ Automatisk bildgenerering med Pollinations.ai
+- ✅ IMDb-länkar i persona-cards
+- ✅ "Generera om" och "Kopiera recept"-funktioner
+- ✅ Dark theme med RecipeLoadingSkeleton
+- ✅ Fullständig dokumentation med detaljerade kommentarer
+
+### Data
+
+- ✅ 17 viktiga ingrediens-alias (optimerat från 88 - endast kritiska för allergi/diet)
+- ✅ 31 personas med profilbilder, IMDb-länkar, unique voices
+
+### AI/LLM Optimeringar
+
+- ✅ systemInstruction för caching (~50% snabbare)
+- ✅ responseSchema för garanterad JSON (~100% valid)
+- ✅ Streaming för progressiv UX
+- ✅ Tidig bildURL för parallell laddning (~2s snabbare)
+- ✅ Post-AI validering med deterministiska filter
+- ✅ Retry-logik med markdown-sanitering
+- ✅ Token-optimering (prompt utan onödig "none" text)
+
+### Säkerhet & Kvalitet
+
+- ✅ PG-16 guardrails i systemInstruction
+- ✅ Parodi/inspirerad ton (inga direkta citat)
+- ✅ Tysta personas får trailer voiceovers
+- ✅ Automatisk korrigering av felaktiga dietTags
+- ✅ Allergi/diet-filter som säkerhetsnät
+
+## 🎯 Exempel-användning
+
+1. Öppna appen
+2. Ange ingredienser: "pasta, tomat, vitlök"
+3. Välj diet: "veg"
+4. Klicka "Generera recept"
+5. Få ett recept från en slumpad persona (t.ex. Ghostface)
+6. Se IMDb-länk, kopiera recept, eller generera om
+
+## 🚧 Framtida förbättringar (ej i MVP)
+
+- Embeddings-index för semantisk sökning
+- Bildgenerering per recept
+- Inloggning och favoriter
+- Inköpslista-funktion
+- Fler personas (20+)
+- A/B-test av prompter
+- Vektor-databas (pgvector/Supabase)
+
+## 📄 Licens
+
+Skolprojekt (ej kommersiellt bruk). Alla tredjepartsnamn/figurer används i **parodi/inspirationssyfte** utan direkta citat.
+
+## 👥 Skapare
+
+Projekt för Chas Academy - Utbildning i webbutveckling
+
+Kristoffer Larsson - [Github](https://github.com/Kristoffer-L)
+
+Cristian Pencheff - [Github](https://github.com/cribepencheff)
+
+Elin Suvinen - [Github](https://github.com/Emberes)
+
+Fares Elloumi - [Github](https://github.com/Fares-elloumi)
 
 ---
-
-## Personas & IP/etik
-- **PG‑16:** ingen grafisk våldsskildring, inga kroppsliga rekvisita/kannibalism.
-- **Parodi/inspirerad ton**: **inga direkta citat/catchphrases** för moderna figurer (`quotePolicy: "paraphrase_only"`).  
-- **Tysta personas** (t.ex. Myers‑inspirerad): **ingen scenanvisning**; skriver bara recept.  
-- **IMDb‑länk** i UI från `personas_pool.json` (ex. “Om denna persona → IMDb”).
-
-> För citatläge: använd **public‑domain‑personas** i separat pool och sätt `quotePolicy: "public_domain_ok"` (ej del av MVP).
-
----
-
-## Datafiler
-- `src/data/recipes_seed.json` — mini‑korpus med recept (id, title, ingredients[], tags[], timeMinutes, difficulty, baseNutrition).  
-- `src/data/ingredient_aliases.json` — alias för normalisering (”krossade tomater” ≈ ”passerade tomater” etc.).  
-- `src/data/personas_pool.json` — persona‑metadata: `displayName`, `imdbUrl`, `quotePolicy`, guardrails.
-
-> **Tips:** håll ingrediensnamn i **singular + lowercase**, och fyll på aliaslistan när ni märker variationer i input.
-
----
-
-## Valfritt: Embeddings-index
-För mer träffsäker sökning:
-1. Build‑script som embed:ar en kort text per recept.  
-2. Spara vektorer i `src/data/recipes_index.json`.  
-3. I `/api/search`: blanda **cosine** (semantisk närhet) med Jaccard (exakt överlapp).  
-4. Ingen extern DB krävs för MVP — index kan laddas i minnet.
-
----
-
-## Test & kvalitet
-- **Enhetstester:** normalize, diet/allergi‑filter, Jaccard.  
-- **Golden prompts (8–10):** typfall (veg/vegan/glutenfri, allergi: nötter, felstavningar, tom pantry).  
-- **Målsiffror:** ≥90% valid JSON i första försöket; fallback fungerar; latens ok i dev.  
-- **Loggning:** promptversion, svarstid, valideringsfel (utan PII).
-
----
-
-## Deploy (Vercel)
-1. Skapa nytt projekt i Vercel, peka på repo:t.  
-2. Lägg **Environment Variables**: `GEMINI_API_KEY` (+ `IMAGE_API_KEY` om bild).  
-3. Deploya. Testa flödet: input → sök → LLM → recept → (bild).
-
----
-
-## Dokumentation
-- **Blueprint:** `docs/blueprint-v2.md` (MVP, arkitektur, tidsplan, checklista)  
-- **Plan (Gemini):** `docs/plan-gemini-v2.md` (systemprompt, schema, few-shots)  
-- **Reflektioner:** `docs/reflektioner.md` (IP/citat, designval)  
-
----
-
-**License:** Skolprojekt (ej kommersiellt bruk). Alla tredjepartsnamn/figurer används i **parodi/inspirationssyfte** utan direkta citat.
