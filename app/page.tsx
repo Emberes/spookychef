@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeCard from '@/components/RecipeCard';
 import RecipeLoadingSkeleton from '@/components/RecipeLoadingSkeleton';
@@ -76,6 +77,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Show persona immediately
@@ -167,6 +172,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Update persona if it changed
@@ -249,6 +258,10 @@ export default function Home() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = JSON.parse(line.slice(6));
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
             
             if (data.persona && !currentPersona) {
               // Show new persona immediately
@@ -282,13 +295,18 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-accent/20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <header className="text-center mb-12">
+        <header className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4 text-primary">
-            🎃 SpookyChef
+            <Image
+              src="/spookychef-logo.webp"
+              alt="Spooky Chef. Horror i köket - med det du redan har hemma"
+              width={540}
+              height={180}
+              className="mx-auto w-full max-w-[420px]"
+              priority
+              style={{ height: 'auto' }}
+            />
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Horror-inspirerade recept baserade på vad du har hemma
-          </p>
         </header>
 
         <RecipeForm
