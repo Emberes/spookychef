@@ -178,15 +178,6 @@ Se `docs/` för detaljerad dokumentation:
 - `reflektioner_kring_projektet_spooky_chef.md` - Design-reflektioner
 - `development-logs/` - Utvecklingslogg och changelogs
 
-## 🔄 Deploy (Vercel)
-
-1. Skapa nytt projekt i Vercel
-2. Koppla till GitHub-repo
-3. Lägg till miljövariabler: `GEMINI_API_KEY`
-4. Deploy!
-
-Vercel detekterar automatiskt Next.js och kör `npm run build`.
-
 ## 🚀 Implementerat
 
 ### Kärnfunktioner
@@ -234,16 +225,6 @@ Vercel detekterar automatiskt Next.js och kör `npm run build`.
 4. Klicka "Generera recept"
 5. Få ett recept från en slumpad persona (t.ex. Ghostface)
 6. Se IMDb-länk, kopiera recept, eller generera om
-
-## 🚧 Framtida förbättringar (ej i MVP)
-
-- Embeddings-index för semantisk sökning
-- Bildgenerering per recept
-- Inloggning och favoriter
-- Inköpslista-funktion
-- Fler personas (20+)
-- A/B-test av prompter
-- Vektor-databas (pgvector/Supabase)
 
 ## 📄 Licens
 
