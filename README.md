@@ -10,7 +10,7 @@ Projektet är byggt **“AI-first”**: vi har använt **GitHub Copilot CLI** f�
 
 Vi använder ingen **RAG/embeddings** i denna version, eftersom vi vill generera nya recept på förfrågan utifrån användarens aktuella ingredienser (i stället för att återanvända förlagor). Bildgenerering kompletteras via **Pollinations.AI.**
 
-## 🧠 Projektreflektioner (Godkänt)
+## 🧠 Projektreflektioner (godkänt)
 
 ### Vilken ny AI-teknik/bibliotek identifierade ni och hur tillämpade ni det?
 
@@ -24,15 +24,15 @@ Vi valde **Google Gemini API** för **snabb och kostnadseffektiv** generering me
 
 AI behövdes för att **skapa nya, kompletta recept i realtid** med rimliga mängder, tider, steg och **persona-anpassad ton** från fria ingredienslistor och valda dieter/allergier—något som är svårt att nå med hårdkodade regler. Utan AI hade vi behövt ett **stort, manuellt kuraterat receptlager**, avancerad sök/regel-logik (synonymer, substitutioner, matchningsnivåer) och **textmallar** som fylls i automatiskt, vilket blir **stelare, mer underhållstungt och mindre dynamiskt**.
 
-## 🏅 Projektreflektioner (Väl Godkänt)
+## 🏅 Projektreflektioner (väl Godkänt)
 
-### Tillämpning av AI-komponenten
+### Tillämpning av AI-komponenten\*\*
 
-Vi använder Google Gemini API med ett flöde som ger strikt JSON via responseSchema, validerar med Zod och strömmar svaret för en följsam realtidsupplevelse. Vid behov hanteras fel med en enkel retry och Markdown-sanitering, och under genereringen skickas en tidig bild-URL så att Pollinations.ai-bilden kan laddas parallellt. Efter AI-svaret kör vi deterministiska diet- och allergifilter och justerar felaktiga dietTags, samtidigt som vi håller oss till PG-16 och en parodi-/inspirerad persona-stil utan direkta citat. Sammantaget visar detta att vi inte bara anropar en LLM, utan applicerar den kontrollerat och robust.
+Vi använder **Google Gemini API** med ett flöde som ger strikt **JSON** via **responseSchema**, validerar med **Zod** och **strömmar** svaret för en följsam realtidsupplevelse. Vid behov hanteras fel med **enkel retry** och **Markdown-sanitering**, och under genereringen skickas en **tidig bild-URL** så att **Pollinations.ai**-bilden kan laddas parallellt. Efter AI-svaret kör vi **deterministiska diet- och allergifilter** och justerar felaktiga **dietTags**, samtidigt som vi håller **PG-16** och en **parodi-/inspirerad persona-stil** utan direkta citat. Sammantaget visar detta att vi inte bara anropar en LLM, utan applicerar den **kontrollerat och robust**.
 
-### Avgörande om varför AI är lämpligt
+### Avgörande om varför AI är lämpligt\*\*
 
-Vi har medvetet valt bort RAG/embeddings eftersom målet är att skapa nya recept on-the-fly utifrån användarens aktuella ingredienser, snarare än att återanvända förlagor. Direkt generering med Gemini passar projektets kreativa och persona-drivna mål, förenklar arkitekturen och gör MVP:n snabbare att bygga och iterera på. Detta visar ett moget omdöme kring när AI är rätt verktyg och hur det ska tillämpas i just den här kontexten.
+Vi prioriterar **direkt generering** med **Gemini** för att skapa **nya recept on-the-fly** utifrån användarens aktuella ingredienser, vilket passar projektets **kreativa och persona-drivna mål** och förenklar arkitekturen så att **MVP:n** blir snabbare att bygga och iterera. **RAG/embeddings** är **borttaget från vår ursprungliga plan**, eftersom fokus är att generera nytt innehåll i stunden snarare än att återanvända förlagor.
 
 ## 🎃 Snabbstart
 
