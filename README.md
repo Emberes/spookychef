@@ -34,7 +34,7 @@ Vi använder **Google Gemini API** med ett flöde som ger strikt **JSON** via **
 
 Vi prioriterar **direkt generering** med **Gemini** för att skapa **nya recept on-the-fly** utifrån användarens aktuella ingredienser, vilket passar projektets **kreativa och persona-drivna mål** och förenklar arkitekturen så att **MVP:n** blir snabbare att bygga och iterera. **RAG/embeddings** är **borttaget från vår ursprungliga plan**, eftersom fokus är att generera nytt innehåll i stunden snarare än att återanvända förlagor.
 
-**Övriga reflektioner ⚡**
+### ⚡Övriga reflektioner
 
 Vi övervägde först direkta citat och “trademarkade” catchphrases, men under arbetet med promptar **påminde AI:n (ChatGPT/Gemini) oss** om IP-/varumärkesbegränsningar, så vi valde att inte använda ordagranna repliker. I stället kör vi **parodi-/inspirerad ton** (PG-16, humor > gore) och låter även “tysta” personas skriva **bara recept** utan scenanvisningar.
 
