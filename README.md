@@ -40,7 +40,7 @@ Vi övervägde först direkta citat och “trademarkade” catchphrases, men und
 
 Vår lösning bygger på **kontrollerad metadata**: varje persona märks som _paraphrase_only_, UI visar en diskret **IMDb-länk** för kontext, modellen svarar med **strikt JSON** (recept), och vi kör **deterministiska diet-/allergifilter** efteråt. Det ger igenkänning och stämning, minskar juridiska/etiska risker och behåller fokus på funktion och kvalitet.
 
-## 🎃 Snabbstart
+## 🐈‍⬛ Snabbstart
 
 ```bash
 # Installera beroenden
