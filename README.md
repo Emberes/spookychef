@@ -24,7 +24,7 @@ Vi valde **Google Gemini API** för **snabb och kostnadseffektiv** generering me
 
 AI behövdes för att **skapa nya, kompletta recept i realtid** med rimliga mängder, tider, steg och **persona-anpassad ton** från fria ingredienslistor och valda dieter/allergier—något som är svårt att nå med hårdkodade regler. Utan AI hade vi behövt ett **stort, manuellt kuraterat receptlager**, avancerad sök/regel-logik (synonymer, substitutioner, matchningsnivåer) och **textmallar** som fylls i automatiskt, vilket blir **stelare, mer underhållstungt och mindre dynamiskt**.
 
-## 🏅 Projektreflektioner (väl Godkänt)
+## 🏅 Projektreflektioner (väl godkänt)
 
 ### Tillämpning av AI-komponenten\*\*
 
