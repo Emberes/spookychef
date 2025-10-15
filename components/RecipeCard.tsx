@@ -16,6 +16,7 @@ interface RecipeCardProps {
   onRegenerate?: () => void;
   onChangeChef?: () => void;
   isRegenerating?: boolean;
+  pollinationsAvailable?: boolean;
 }
 
 export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
@@ -99,7 +100,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
         {/* Recipe Image */}
         {recipe.imageUrl && !imageError && (
           <div className="w-full aspect-video relative rounded-lg overflow-hidden bg-muted">
-            {!imageLoaded && (
+            {!imageLoaded && pollinationsAvailable && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted/50">
                 <div className="animate-spin h-8 w-8 border-4 border-muted-foreground/30 border-t-muted-foreground rounded-full"></div>
                 <span className="text-sm text-muted-foreground">Genererar bild...</span>

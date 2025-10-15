@@ -18,10 +18,10 @@ export default function Home() {
   const recipeCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (recipeCardRef.current && (recipe || persona)) {
+    if (recipeCardRef.current && (recipe || persona || isLoading)) {
       recipeCardRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [recipe, persona]);
+  }, [recipe, persona, isLoading]);
   
   // Store search criteria for regeneration
   const [searchCriteria, setSearchCriteria] = useState<{
@@ -398,6 +398,7 @@ export default function Home() {
             onRegenerate={handleRegenerate}
             onChangeChef={handleChangeChef}
             isRegenerating={isLoading}
+            pollinationsAvailable={pollinationsAvailable}
           />
         )}
 

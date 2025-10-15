@@ -168,20 +168,17 @@ export async function POST(request: NextRequest) {
       pollinationsAvailable = healthData.available;
 
       if (!pollinationsAvailable) {
-        console.warn('⚠️  Pollinations.ai image generation service is currently unavailable.');
-        return NextResponse.json(
-          { error: 'Pollinations.ai image generation service is currently unavailable.' },
-          { status: 503 } // Service Unavailable
-        );
+        console.warn('⚠️  Pollinations.ai image generation service is currently unavailable. Proceeding without image generation.');
       }
+    } else {
+      // If healthRes.ok is false, it means the health check endpoint itself failed or returned a non-200 status
+      console.warn('⚠️  Pollinations.ai health check endpoint returned a non-OK status. Proceeding without image generation.');
+      pollinationsAvailable = false;
     }
   } catch (err) {
     console.error('💥 Failed to check Pollinations health:', err);
-    // If the health check itself fails, we should also return an error
-    return NextResponse.json(
-      { error: 'Failed to check Pollinations.ai service status.' },
-      { status: 500 } // Internal Server Error
-    );
+    // If the health check itself fails, we should proceed without image generation
+    pollinationsAvailable = false;
   }
 
     const body = await request.json();
