@@ -21,6 +21,7 @@ interface RecipeCardProps {
 export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,7 +97,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
       {/* Recipe Content */}
       <div className="p-6 space-y-6">
         {/* Recipe Image */}
-        {recipe.imageUrl && (
+        {recipe.imageUrl && !imageError && (
           <div className="w-full aspect-video relative rounded-lg overflow-hidden bg-muted">
             {!imageLoaded && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted/50">
@@ -110,6 +111,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
               className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               loading="lazy"
               onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
             />
           </div>
         )}

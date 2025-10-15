@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import RecipeForm from '@/components/RecipeForm';
 import RecipeCard from '@/components/RecipeCard';
@@ -14,6 +14,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [chatId, setChatId] = useState(() => Math.random().toString(36).substring(7));
   const [progress, setProgress] = useState<number>(0);
+  const [pollinationsAvailable, setPollinationsAvailable] = useState<boolean>(true);
+  const recipeCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (recipeCardRef.current && (recipe || persona)) {
+      recipeCardRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [recipe, persona]);
   
   // Store search criteria for regeneration
   const [searchCriteria, setSearchCriteria] = useState<{
@@ -21,6 +29,63 @@ export default function Home() {
     diet: string[];
     allergies: string[];
   } | null>(null);
+
+  // Check Pollinations health on mount and periodically
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        console.log('🔍 Checking Pollinations health...');
+        const response = await fetch('/api/health/pollinations');
+        const data = await response.json();
+        console.log('🔍 Health check result:', data);
+        setPollinationsAvailable(data.available);
+        
+        if (!data.available) {
+          console.warn('⚠️  Pollinations.ai is not available - images will be disabled');
+        } else {
+          console.log('✅ Pollinations.ai is available');
+        }
+      } catch (err) {
+        console.error('❌ Failed to check Pollinations health:', err);
+        setPollinationsAvailable(false);
+      }
+    };
+
+    // Initial check
+    checkHealth();
+
+    // Recheck every 5 minutes
+    const interval = setInterval(checkHealth, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper: Ta bort imageUrl om den är undefined eller Pollinations inte är tillgänglig
+  const sanitizeRecipe = (recipe: RecipeResponse, earlyImageUrl?: string | null): RecipeResponse => {
+    console.log('🔍 sanitizeRecipe called:', {
+      pollinationsAvailable,
+      hasEarlyImageUrl: !!earlyImageUrl,
+      hasRecipeImageUrl: !!recipe.imageUrl,
+      earlyImageUrl,
+      recipeImageUrl: recipe.imageUrl
+    });
+    
+    if (!pollinationsAvailable) {
+      console.log('⚠️  Removing imageUrl - Pollinations not available');
+      const { imageUrl, ...recipeWithoutImage } = recipe;
+      return recipeWithoutImage as RecipeResponse;
+    }
+    
+    const finalImageUrl = earlyImageUrl || recipe.imageUrl;
+    if (!finalImageUrl) {
+      console.log('⚠️  Removing imageUrl - no URL available');
+      const { imageUrl, ...recipeWithoutImage } = recipe;
+      return recipeWithoutImage as RecipeResponse;
+    }
+    
+    console.log('✅ Keeping imageUrl:', finalImageUrl);
+    return earlyImageUrl ? { ...recipe, imageUrl: earlyImageUrl } : recipe;
+  };
 
   const handleGenerateRecipe = async (
     ingredients: string[],
@@ -101,14 +166,7 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              // NOTE: Använd tidig bildURL om den skickades, annars faller vi tillbaka på receptets URL
-              // I praktiken är båda samma (byggt från samma title/imagePrompt), men tidig URL
-              // låter bilden börja ladda tidigare vilket ger ~2 sekunder bättre UX.
-              // Utan: 4s recept + 2-3s bildladdning = 6-7s totalt
-              // Med: 4s recept (bildladdning parallellt) = 4-5s totalt
-              const finalRecipe = earlyImageUrl 
-                ? { ...data.recipe, imageUrl: earlyImageUrl }
-                : data.recipe;
+              const finalRecipe = sanitizeRecipe(data.recipe, earlyImageUrl);
               setRecipe(finalRecipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
@@ -191,7 +249,13 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              setRecipe(data.recipe);
+              // Ta bort imageUrl helt om den är undefined (Pollinations unavailable)
+              let finalRecipe = data.recipe;
+              if (!finalRecipe.imageUrl) {
+                const { imageUrl, ...recipeWithoutImage } = finalRecipe;
+                finalRecipe = recipeWithoutImage as typeof finalRecipe;
+              }
+              setRecipe(finalRecipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
             }
@@ -277,7 +341,13 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              setRecipe(data.recipe);
+              // Ta bort imageUrl helt om den är undefined (Pollinations unavailable)
+              let finalRecipe = data.recipe;
+              if (!finalRecipe.imageUrl) {
+                const { imageUrl, ...recipeWithoutImage } = finalRecipe;
+                finalRecipe = recipeWithoutImage as typeof finalRecipe;
+              }
+              setRecipe(finalRecipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
             }
@@ -294,7 +364,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-accent/20">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-4xl" ref={recipeCardRef}>
         <header className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4 text-primary">
             <Image

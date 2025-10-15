@@ -91,7 +91,7 @@ function buildRecipeImageUrl(
   const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
   const basePrompt = imagePrompt || `A plate of ${title || 'horror dish'}`;
   const fullPrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=768&height=432&nologo=true`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=768&height=432&nologo=true&enhance=false`;
 }
 
 function buildSystemPrompt(persona: typeof personasData[0]) {
@@ -152,6 +152,38 @@ ${personaLine}`;
 
 export async function POST(request: NextRequest) {
   try {
+  // Early Pollinations health check to prevent unnecessary processing
+  let pollinationsAvailable = true;
+  try {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+
+    const healthRes = await fetch(`${baseUrl}/api/health/pollinations`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (healthRes.ok) {
+      const healthData = await healthRes.json();
+      pollinationsAvailable = healthData.available;
+
+      if (!pollinationsAvailable) {
+        console.warn('⚠️  Pollinations.ai image generation service is currently unavailable.');
+        return NextResponse.json(
+          { error: 'Pollinations.ai image generation service is currently unavailable.' },
+          { status: 503 } // Service Unavailable
+        );
+      }
+    }
+  } catch (err) {
+    console.error('💥 Failed to check Pollinations health:', err);
+    // If the health check itself fails, we should also return an error
+    return NextResponse.json(
+      { error: 'Failed to check Pollinations.ai service status.' },
+      { status: 500 } // Internal Server Error
+    );
+  }
+
     const body = await request.json();
     const { userIngredients, chatId, diet, allergies } = GenerateRequestSchema.parse(body);
 
@@ -192,6 +224,9 @@ export async function POST(request: NextRequest) {
     // 3. BildURL skickas tidigt när title finns (~1s) → parallell bildladdning
     // 4. Färdigt recept skickas när validering klar (~4s)
     // Resultat: Användaren ser progress istället för tom spinner
+    
+
+    
     // Create a streaming response
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -254,7 +289,7 @@ export async function POST(request: NextRequest) {
               // RESULTAT: Bilden syns ~2 sekunder tidigare
               // Utan: 4s recept + 2-3s bildladdning = 6-7s totalt
               // Med: 4s recept (bildladdning parallellt) = 4-5s totalt
-              if (!imageUrlSent && fullText.includes('"title"') && fullText.includes('"imagePrompt"')) {
+              if (!imageUrlSent && pollinationsAvailable && fullText.includes('"title"') && fullText.includes('"imagePrompt"')) {
                 try {
                   const partialJson = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
                   const partial = JSON.parse(partialJson + '}'); // Försök stänga objektet
@@ -336,9 +371,16 @@ export async function POST(request: NextRequest) {
             // Update validated recipe with corrected tags
             validatedRecipe.dietTags = correctedDietTags;
 
-            // Generate image URL using Pollinations.ai
-            const imageUrl = buildRecipeImageUrl(validatedRecipe.title, validatedRecipe.imagePrompt, persona);
-            console.log('🖼️  Generated image URL');
+            // Generate image URL using Pollinations.ai (only if available)
+            const imageUrl = pollinationsAvailable 
+              ? buildRecipeImageUrl(validatedRecipe.title, validatedRecipe.imagePrompt, persona)
+              : undefined;
+            
+            if (imageUrl) {
+              console.log('🖼️  Generated image URL');
+            } else {
+              console.log('⚠️  Skipped image generation (Pollinations unavailable)');
+            }
 
             // Success! Send final complete recipe
             const response = {
