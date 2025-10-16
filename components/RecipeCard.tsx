@@ -157,6 +157,21 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
           </div>
         )}
 
+        {/* Ingredients */}
+        <div>
+          <h3 className="text-xl font-semibold mb-3">Ingredienser</h3>
+          <ul className="space-y-2">
+            {recipe.ingredients.map((ing, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>
+                  <strong>{ing.qty} {ing.unit}</strong> {ing.name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Instructions */}
         <div>
           <h3 className="text-xl font-semibold mb-3">Instruktioner</h3>
