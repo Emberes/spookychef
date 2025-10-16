@@ -19,7 +19,7 @@ interface RecipeCardProps {
   pollinationsAvailable?: boolean;
 }
 
-export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
+export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false, pollinationsAvailable }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
