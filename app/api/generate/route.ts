@@ -3,6 +3,7 @@ import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/gen
 import { GenerateRequestSchema, RecipeResponseSchema } from '@/lib/schema';
 import { containsAllergens, violatesDiet } from '@/lib/filters';
 import personasData from '@/data/personas_pool_iconic.json';
+import OpenAI from 'openai';
 
 // NOTE: Arkitekturval - Direkt LLM-generering istället för RAG/embeddings
 // Projektet använder INTE embeddings eller vektorsökning trots att blueprinten nämnde det.
@@ -14,6 +15,7 @@ import personasData from '@/data/personas_pool_iconic.json';
 // 5. Snabbare utveckling - ingen tid spenderad på embeddings-pipeline
 // Trade-off: Mer AI-beroende, potentiellt högre hallucinationsrisk (hanteras med responseSchema + validering)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // NOTE: JSON Schema för responseSchema
 // INNOVATIVT: Manuellt skriven JSON Schema istället för zod-to-json-schema dependency
@@ -74,24 +76,36 @@ function getOrCreatePersona(chatId: string) {
   return chatPersonas.get(chatId)!;
 }
 
-/**
- * Bygg bildURL för recept med Pollinations.ai
- * 
- * NOTE: Bildgenereringsoptimering
- * - Tog bort enhance=true för snabbare generering (~30-50% snabbare)
- * - Optimerad storlek 768x432 för web (bra balans mellan kvalitet och hastighet)
- * - Denna funktion anropas tidigt under streaming så bilden börjar ladda 
- *   medan resten av receptet fortfarande genereras
- */
-function buildRecipeImageUrl(
-  title: string | undefined, 
-  imagePrompt: string | undefined, 
+async function buildOpenaiImageUrl(
+  title: string | undefined,
+  imagePrompt: string | undefined,
   persona: typeof personasData[0]
-): string {
+): Promise<string | undefined> {
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn('⚠️  OPENAI_API_KEY is not configured. Cannot generate image with DALL·E 3.');
+    return undefined;
+  }
+
   const movieContext = persona.origin ? `inspired by ${persona.origin}` : '';
   const basePrompt = imagePrompt || `A plate of ${title || 'horror dish'}`;
-  const fullPrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=768&height=432&nologo=true&enhance=false`;
+  const fullPrompt = `${basePrompt}, ${persona.displayName} horror themed dish ${movieContext}, food motive absolutely centered in the image, dark moody atmosphere, eerie lighting, cinematic food photography, high quality, professional`;
+
+  try {
+    const image = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: fullPrompt,
+      n: 1,
+      size: "1024x1024",
+    });
+    const imageUrl = image.data && image.data.length > 0 ? image.data[0].url : undefined;
+    if (imageUrl) {
+      console.log('🖼️  DALL·E 3 generated URL:', imageUrl);
+    }
+    return imageUrl;
+  } catch (error) {
+    console.error('❌ Failed to generate image with DALL·E 3:', error);
+    return undefined;
+  }
 }
 
 function buildSystemPrompt(persona: typeof personasData[0]) {
@@ -135,7 +149,9 @@ function buildUserPrompt(
     ? 'Add ONE dramatic trailer-style voiceover describing the character.'
     : 'Add ONE English persona line spoken by the character.';
   const allergyWarning = allergies.length > 0
-    ? `\n\nCRITICAL - ALLERGIES: User is allergic to ${allergies.join(', ')}. NEVER use these ingredients or derivatives (e.g., if allergic to eggs, avoid mayonnaise). Replace with safe alternatives.`
+    ? `
+
+CRITICAL - ALLERGIES: User is allergic to ${allergies.join(', ')}. NEVER use these ingredients or derivatives (e.g., if allergic to eggs, avoid mayonnaise). Replace with safe alternatives.`
     : '';
 
   // NOTE: Prompt-optimering - inkludera endast diet/allergier om användaren angett dem
@@ -152,35 +168,6 @@ ${personaLine}`;
 
 export async function POST(request: NextRequest) {
   try {
-  // Early Pollinations health check to prevent unnecessary processing
-  let pollinationsAvailable = true;
-  try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
-
-    const healthRes = await fetch(`${baseUrl}/api/health/pollinations`, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (healthRes.ok) {
-      const healthData = await healthRes.json();
-      pollinationsAvailable = healthData.available;
-
-      if (!pollinationsAvailable) {
-        console.warn('⚠️  Pollinations.ai image generation service is currently unavailable. Proceeding without image generation.');
-      }
-    } else {
-      // If healthRes.ok is false, it means the health check endpoint itself failed or returned a non-200 status
-      console.warn('⚠️  Pollinations.ai health check endpoint returned a non-OK status. Proceeding without image generation.');
-      pollinationsAvailable = false;
-    }
-  } catch (err) {
-    console.error('💥 Failed to check Pollinations health:', err);
-    // If the health check itself fails, we should proceed without image generation
-    pollinationsAvailable = false;
-  }
-
     const body = await request.json();
     const { userIngredients, chatId, diet, allergies } = GenerateRequestSchema.parse(body);
 
@@ -284,20 +271,20 @@ export async function POST(request: NextRequest) {
               // 4. Fortsätt streama recept (3-4s)
               // 5. När recept klart har bilden redan börjat/färdigställts ladda
               // RESULTAT: Bilden syns ~2 sekunder tidigare
-              // Utan: 4s recept + 2-3s bildladdning = 6-7s totalt
-              // Med: 4s recept (bildladdning parallellt) = 4-5s totalt
-              if (!imageUrlSent && pollinationsAvailable && fullText.includes('"title"') && fullText.includes('"imagePrompt"')) {
+              if (!imageUrlSent && fullText.includes("title") && fullText.includes("imagePrompt")) {
                 try {
                   const partialJson = fullText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
                   const partial = JSON.parse(partialJson + '}'); // Försök stänga objektet
                   
                   if (partial.title || partial.imagePrompt) {
-                    const imageUrl = buildRecipeImageUrl(partial.title, partial.imagePrompt, persona);
+                    const imageUrl = await buildOpenaiImageUrl(partial.title, partial.imagePrompt, persona);
                     
                     // Skicka bildURL tidigt så klienten kan börja ladda
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ imageUrl })}\n\n`));
-                    imageUrlSent = true;
-                    console.log('🖼️  Sent image URL early during streaming');
+                    if (imageUrl) {
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ imageUrl })}\n\n`));
+                      imageUrlSent = true;
+                      console.log('🖼️  Sent image URL early during streaming');
+                    }
                   }
                 } catch (e) {
                   // Partial parse failed, continue streaming
@@ -368,17 +355,14 @@ export async function POST(request: NextRequest) {
             // Update validated recipe with corrected tags
             validatedRecipe.dietTags = correctedDietTags;
 
-            // Generate image URL using Pollinations.ai (only if available)
-            const imageUrl = pollinationsAvailable 
-              ? buildRecipeImageUrl(validatedRecipe.title, validatedRecipe.imagePrompt, persona)
-              : undefined;
-            
+            // Generate image URL using DALL·E 3
+            let imageUrl: string | undefined = await buildOpenaiImageUrl(validatedRecipe.title, validatedRecipe.imagePrompt, persona);
             if (imageUrl) {
-              console.log('🖼️  Generated image URL');
+              console.log('🖼️  Generated image URL with DALL·E 3');
             } else {
-              console.log('⚠️  Skipped image generation (Pollinations unavailable)');
+              console.warn('⚠️  DALL·E 3 failed to generate image. Proceeding without image.');
             }
-
+            
             // Success! Send final complete recipe
             const response = {
               ...validatedRecipe,

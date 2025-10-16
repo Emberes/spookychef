@@ -8,17 +8,17 @@ Vår app använder **Google Gemini API** som **LLM** för att generera kompletta
 
 Projektet är byggt **“AI-first”**: vi har använt **GitHub Copilot CLI** för koden, ChatGPT för planering och struktur (inkl. promptdesign) och **Gemini API** för själva receptgenereringen, med målet att minimera handskriven kod.
 
-Vi använder ingen **RAG/embeddings** i denna version, eftersom vi vill generera nya recept på förfrågan utifrån användarens aktuella ingredienser (i stället för att återanvända förlagor). Bildgenerering kompletteras via **Pollinations.AI.**
+Vi använder ingen **RAG/embeddings** i denna version, eftersom vi vill generera nya recept på förfrågan utifrån användarens aktuella ingredienser (i stället för att återanvända förlagor).
 
 ## 🧠 Projektreflektioner (godkänt)
 
 ### Vilken ny AI-teknik/bibliotek identifierade ni och hur tillämpade ni det?
 
-Vi identifierade **Google Gemini API (2.5-flash-lite)** som ny teknik och använder det för att generera recept **on-the-fly** utifrån användarens ingredienser, diet och allergier i en **PG-16, parodi-/inspirerad persona-stil**. Flödet bygger på _systemInstruction_ + _responseSchema_ för strikt **JSON**, **Zod-validering** (1 retry + fallback) och **streaming**, samt en efterkontroll som stoppar allergener. Som komplement genererar **Pollinations.AI** matbilder från en prompt baserad på det slutliga receptet.
+Vi identifierade **Google Gemini API (2.5-flash-lite)** som ny teknik och använder det för att generera recept **on-the-fly** utifrån användarens ingredienser, diet och allergier i en **PG-16, parodi-/inspirerad persona-stil**. Flödet bygger på _systemInstruction_ + _responseSchema_ för strikt **JSON**, **Zod-validering** (1 retry + fallback) och **streaming**, samt en efterkontroll som stoppar allergener.
 
 ### Motivering av val av AI-teknik/bibliotek
 
-Vi valde **Google Gemini API** för **snabb och kostnadseffektiv** generering med **bra stöd för strukturerad utdata** och **streaming** som passar vår realtids-UX. **Dessutom valde vi Gemini på lärarens rekommendation och för att det kan användas utan kostnader i vår kontext, vilket gjorde det möjligt att testa och iterera genom hela kursen.** Med **tydliga regler i prompten** (PG-16, parodi-ton, inga direkta citat, _endast recept_), **Zod-validering** och allergen-efterkontroll får vi stabila JSON-svar. Vi avstod **RAG/embeddings** eftersom vi vill **skapa nya recept på plats** utifrån användarens aktuella ingredienser. **Pollinations.AI** valdes för att det är enkelt att integrera **utan API-nyckel** och kan bytas ut fristående från LLM-flödet.
+Vi valde **Google Gemini API** för **snabb och kostnadseffektiv** generering med **bra stöd för strukturerad utdata** och **streaming** som passar vår realtids-UX. **Dessutom valde vi Gemini på lärarens rekommendation och för att det kan användas utan kostnader i vår kontext, vilket gjorde det möjligt att testa och iterera genom hela kursen.** Med **tydliga regler i prompten** (PG-16, parodi-ton, inga direkta citat, _endast recept_), **Zod-validering** och allergen-efterkontroll får vi stabila JSON-svar. Vi avstod **RAG/embeddings** eftersom vi vill **skapa nya recept på plats** utifrån användarens aktuella ingredienser.
 
 ### Varför behövdes AI-komponenten? Kunde det lösts utan AI?
 
@@ -28,7 +28,7 @@ AI behövdes för att **skapa nya, kompletta recept i realtid** med rimliga män
 
 ### Tillämpning av AI-komponenten
 
-Vi använder **Google Gemini API** med ett flöde som ger strikt **JSON** via **responseSchema**, validerar med **Zod** och **strömmar** svaret för en följsam realtidsupplevelse. Vid behov hanteras fel med **enkel retry** och **Markdown-sanitering**, och under genereringen skickas en **tidig bild-URL** så att **Pollinations.ai**-bilden kan laddas parallellt. Efter AI-svaret kör vi **deterministiska diet- och allergifilter** och justerar felaktiga **dietTags**, samtidigt som vi håller **PG-16** och en **parodi-/inspirerad persona-stil** utan direkta citat. Sammantaget visar detta att vi inte bara anropar en LLM, utan applicerar den **kontrollerat och robust**.
+Vi använder **Google Gemini API** med ett flöde som ger strikt **JSON** via **responseSchema**, validerar med **Zod** och **strömmar** svaret för en följsam realtidsupplevelse. Vid behov hanteras fel med **enkel retry** och **Markdown-sanitering**, och under genereringen skickas en **tidig bild-URL** så att bilden kan laddas parallellt. Efter AI-svaret kör vi **deterministiska diet- och allergifilter** och justerar felaktiga **dietTags**, samtidigt som vi håller **PG-16** och en **parodi-/inspirerad persona-stil** utan direkta citat. Sammantaget visar detta att vi inte bara anropar en LLM, utan applicerar den **kontrollerat och robust**.
 
 ### Avgörande om varför AI är lämpligt
 
@@ -62,7 +62,6 @@ npm run dev
 - **Next.js 14** (TypeScript, App Router)
 - **Tailwind CSS** (Dark mode)
 - **Gemini AI** (2.5-flash-lite) - Receptgenerering med systemInstruction + responseSchema
-- **Pollinations.ai** - Bildgenerering
 - **Zod** - Schema-validering
 - **Lucide React** - Ikoner
 
@@ -131,7 +130,7 @@ npm run lint     # Kör ESLint
 2. **Ingrediens-input** - Användaren anger ingredienser, diet och allergier
 3. **LLM-generering** - Gemini skapar komplett recept från scratch med streaming
 4. **Validering** - responseSchema + Zod + deterministiska diet/allergi-filter
-5. **Bildgenerering** - Pollinations.ai genererar matbild parallellt med recept
+5. **Bildgenerering** - Tidigare Pollinations.ai, nu hanteras bilder externt eller via annan tjänst.
 6. **UI** - Visa recept med IMDb-länk, bild, och persona-info
 
 ### AI/LLM-implementationer
@@ -176,8 +175,8 @@ npm run lint     # Kör ESLint
 
 ```
 data: {"persona": {"id": "ghostface", "displayName": "Ghostface", ...}}
-data: {"chunk": "{\"personaId\":"}
-data: {"chunk": "\"ghostface\",\"title\":\"..."}
+data: {"chunk": "{"personaId":""}
+data: {"chunk": ""ghostface","title":"..."}"}
 data: {"imageUrl": "https://image.pollinations.ai/..."}
 ...
 data: {"done": true, "recipe": {...}}
@@ -226,7 +225,6 @@ Se `docs/` för detaljerad dokumentation:
 - ✅ Direkt LLM-generering (ingen RAG/embeddings - recept skapas från scratch)
 - ✅ Gemini AI med systemInstruction + responseSchema
 - ✅ Streaming med progressbar och dynamiska meddelanden
-- ✅ Automatisk bildgenerering med Pollinations.ai
 - ✅ IMDb-länkar i persona-cards
 - ✅ "Generera om" och "Kopiera recept"-funktioner
 - ✅ Dark theme med RecipeLoadingSkeleton
@@ -242,7 +240,6 @@ Se `docs/` för detaljerad dokumentation:
 - ✅ systemInstruction för caching (~50% snabbare)
 - ✅ responseSchema för garanterad JSON (~100% valid)
 - ✅ Streaming för progressiv UX
-- ✅ Tidig bildURL för parallell laddning (~2s snabbare)
 - ✅ Post-AI validering med deterministiska filter
 - ✅ Retry-logik med markdown-sanitering
 - ✅ Token-optimering (prompt utan onödig "none" text)

@@ -12,6 +12,7 @@ interface RecipeLoadingSkeletonProps {
     imageUrl?: string;
   };
   progress: number;
+  openaiAvailable?: boolean;
 }
 
 const preparationSteps = [
@@ -26,7 +27,7 @@ const preparationSteps = [
   'förbereder mise en place...',
 ];
 
-export default function RecipeLoadingSkeleton({ persona, progress }: RecipeLoadingSkeletonProps) {
+export default function RecipeLoadingSkeleton({ persona, progress, openaiAvailable = true }: RecipeLoadingSkeletonProps) {
   const [showPersona, setShowPersona] = useState(false);
   const [showTitle, setShowTitle] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
@@ -59,6 +60,13 @@ export default function RecipeLoadingSkeleton({ persona, progress }: RecipeLoadi
 
     return () => clearInterval(interval);
   }, []);
+
+  const getImageGenerationStatusMessage = () => {
+    if (openaiAvailable) {
+      return 'Genererar bild med DALL·E 3...';
+    }
+    return 'Ingen bildgenerering tillgänglig.';
+  };
 
   return (
     <div className="mt-8 bg-card rounded-lg border border-border shadow-xl overflow-hidden">
@@ -123,7 +131,7 @@ export default function RecipeLoadingSkeleton({ persona, progress }: RecipeLoadi
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
           <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
           <span>
-            {`${persona.displayName} ${preparationSteps[currentActivity]}`}
+            {progress < 95 ? `${persona.displayName} ${preparationSteps[currentActivity]}` : getImageGenerationStatusMessage()}
           </span>
         </div>
       </div>

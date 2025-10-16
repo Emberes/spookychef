@@ -16,10 +16,10 @@ interface RecipeCardProps {
   onRegenerate?: () => void;
   onChangeChef?: () => void;
   isRegenerating?: boolean;
-  pollinationsAvailable?: boolean;
+  openaiAvailable?: boolean;
 }
 
-export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false }: RecipeCardProps) {
+export default function RecipeCard({ recipe, persona, onRegenerate, onChangeChef, isRegenerating = false, openaiAvailable = true }: RecipeCardProps) {
   const [copied, setCopied] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -100,7 +100,7 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
         {/* Recipe Image */}
         {recipe.imageUrl && !imageError && (
           <div className="w-full aspect-video relative rounded-lg overflow-hidden bg-muted">
-            {!imageLoaded && pollinationsAvailable && (
+            {!imageLoaded && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted/50">
                 <div className="animate-spin h-8 w-8 border-4 border-muted-foreground/30 border-t-muted-foreground rounded-full"></div>
                 <span className="text-sm text-muted-foreground">Genererar bild...</span>
@@ -156,21 +156,6 @@ ${recipe.personaLines.length > 0 ? '\n' + recipe.personaLines.join('\n') : ''}
             ))}
           </div>
         )}
-
-        {/* Ingredients */}
-        <div>
-          <h3 className="text-xl font-semibold mb-3">Ingredienser</h3>
-          <ul className="space-y-2">
-            {recipe.ingredients.map((ingredient, idx) => (
-              <li key={idx} className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>
-                  <strong>{ingredient.qty} {ingredient.unit}</strong> {ingredient.name}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
         {/* Instructions */}
         <div>

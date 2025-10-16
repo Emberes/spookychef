@@ -14,7 +14,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [chatId, setChatId] = useState(() => Math.random().toString(36).substring(7));
   const [progress, setProgress] = useState<number>(0);
-  const [pollinationsAvailable, setPollinationsAvailable] = useState<boolean>(true);
+  const [openaiAvailable, setOpenaiAvailable] = useState<boolean>(true);
   const recipeCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,24 +30,25 @@ export default function Home() {
     allergies: string[];
   } | null>(null);
 
-  // Check Pollinations health on mount and periodically
+  // Check OpenAI health on mount and periodically
   useEffect(() => {
     const checkHealth = async () => {
+      // Check OpenAI health
       try {
-        console.log('🔍 Checking Pollinations health...');
-        const response = await fetch('/api/health/pollinations');
+        console.log('🔍 Checking OpenAI health...');
+        const response = await fetch('/api/health/openai');
         const data = await response.json();
-        console.log('🔍 Health check result:', data);
-        setPollinationsAvailable(data.available);
-        
+        console.log('🔍 OpenAI health check result:', data);
+        setOpenaiAvailable(data.available);
+
         if (!data.available) {
-          console.warn('⚠️  Pollinations.ai is not available - images will be disabled');
+          console.warn('⚠️  OpenAI DALL·E 3 is not available - will not be used for image generation');
         } else {
-          console.log('✅ Pollinations.ai is available');
+          console.log('✅ OpenAI DALL·E 3 is available');
         }
       } catch (err) {
-        console.error('❌ Failed to check Pollinations health:', err);
-        setPollinationsAvailable(false);
+        console.error('❌ Failed to check OpenAI health:', err);
+        setOpenaiAvailable(false);
       }
     };
 
@@ -59,33 +60,6 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
-
-  // Helper: Ta bort imageUrl om den är undefined eller Pollinations inte är tillgänglig
-  const sanitizeRecipe = (recipe: RecipeResponse, earlyImageUrl?: string | null): RecipeResponse => {
-    console.log('🔍 sanitizeRecipe called:', {
-      pollinationsAvailable,
-      hasEarlyImageUrl: !!earlyImageUrl,
-      hasRecipeImageUrl: !!recipe.imageUrl,
-      earlyImageUrl,
-      recipeImageUrl: recipe.imageUrl
-    });
-    
-    if (!pollinationsAvailable) {
-      console.log('⚠️  Removing imageUrl - Pollinations not available');
-      const { imageUrl, ...recipeWithoutImage } = recipe;
-      return recipeWithoutImage as RecipeResponse;
-    }
-    
-    const finalImageUrl = earlyImageUrl || recipe.imageUrl;
-    if (!finalImageUrl) {
-      console.log('⚠️  Removing imageUrl - no URL available');
-      const { imageUrl, ...recipeWithoutImage } = recipe;
-      return recipeWithoutImage as RecipeResponse;
-    }
-    
-    console.log('✅ Keeping imageUrl:', finalImageUrl);
-    return earlyImageUrl ? { ...recipe, imageUrl: earlyImageUrl } : recipe;
-  };
 
   const handleGenerateRecipe = async (
     ingredients: string[],
@@ -128,7 +102,6 @@ export default function Home() {
       let totalChunks = 0;
       const estimatedTotalChunks = 100;
       let currentPersona = null;
-      let earlyImageUrl = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -153,11 +126,6 @@ export default function Home() {
               setPersona(currentPersona);
             }
             
-            if (data.imageUrl && !earlyImageUrl) {
-              // Store early image URL - will be used when recipe is ready
-              earlyImageUrl = data.imageUrl;
-            }
-            
             if (data.chunk) {
               totalChunks++;
               const newProgress = Math.min(95, (totalChunks / estimatedTotalChunks) * 100);
@@ -166,8 +134,7 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              const finalRecipe = sanitizeRecipe(data.recipe, earlyImageUrl);
-              setRecipe(finalRecipe);
+              setRecipe(data.recipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
             }
@@ -249,13 +216,7 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              // Ta bort imageUrl helt om den är undefined (Pollinations unavailable)
-              let finalRecipe = data.recipe;
-              if (!finalRecipe.imageUrl) {
-                const { imageUrl, ...recipeWithoutImage } = finalRecipe;
-                finalRecipe = recipeWithoutImage as typeof finalRecipe;
-              }
-              setRecipe(finalRecipe);
+              setRecipe(data.recipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
             }
@@ -341,13 +302,7 @@ export default function Home() {
             
             if (data.done && data.recipe) {
               setProgress(100);
-              // Ta bort imageUrl helt om den är undefined (Pollinations unavailable)
-              let finalRecipe = data.recipe;
-              if (!finalRecipe.imageUrl) {
-                const { imageUrl, ...recipeWithoutImage } = finalRecipe;
-                finalRecipe = recipeWithoutImage as typeof finalRecipe;
-              }
-              setRecipe(finalRecipe);
+              setRecipe(data.recipe);
               setPersona(data.recipe.persona);
               setIsLoading(false);
             }
@@ -398,7 +353,7 @@ export default function Home() {
             onRegenerate={handleRegenerate}
             onChangeChef={handleChangeChef}
             isRegenerating={isLoading}
-            pollinationsAvailable={pollinationsAvailable}
+            openaiAvailable={openaiAvailable}
           />
         )}
 
@@ -406,6 +361,7 @@ export default function Home() {
           <RecipeLoadingSkeleton
             persona={persona}
             progress={progress}
+            openaiAvailable={openaiAvailable}
           />
         )}
 
